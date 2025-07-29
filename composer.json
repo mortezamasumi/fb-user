@@ -1,0 +1,70 @@
+{
+    "name": "mortezamasumi/fb-user",
+    "description": "Add user model, migrations, resource and others to filament",
+    "keywords": [
+        "mortezamasumi",
+        "laravel",
+        "fb-user"
+    ],
+    "homepage": "https://github.com/mortezamasumi/fb-user",
+    "support": {
+        "issues": "https://github.com/mortezamasumi/fb-user/issues",
+        "source": "https://github.com/mortezamasumi/fb-user"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Morteza Masumi",
+            "email": "morteza.masumi@gmail.com",
+            "role": "Developer"
+        }
+    ],
+    "require": {
+        "php": "^8.2",
+        "filament/filament": "^4.0",
+        "spatie/laravel-package-tools": "^1.0"
+    },
+    "require-dev": {
+        "nunomaduro/collision": "^8.0",
+        "orchestra/testbench": "^10.0",
+        "pestphp/pest": "^3.0",
+        "pestphp/pest-plugin-arch": "^3.0",
+        "pestphp/pest-plugin-laravel": "^3.0",
+        "pestphp/pest-plugin-livewire": "^3.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "Mortezamasumi\\FbUser\\": "src/",
+            "Mortezamasumi\\FbUser\\Database\\Factories\\": "database/factories/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Mortezamasumi\\FbUser\\Tests\\": "tests/"
+        }
+    },
+    "scripts": {
+        "post-autoload-dump": "@php ./vendor/bin/testbench package:discover --ansi",
+        "test": "vendor/bin/pest",
+        "test-coverage": "vendor/bin/pest --coverage"
+    },
+    "config": {
+        "sort-packages": true,
+        "allow-plugins": {
+            "pestphp/pest-plugin": true,
+            "phpstan/extension-installer": true
+        }
+    },
+    "extra": {
+        "laravel": {
+            "providers": [
+                "Mortezamasumi\\FbUser\\FbUserServiceProvider"
+            ],
+            "aliases": {
+                "FbUser": "Mortezamasumi\\FbUser\\Facades\\FbUser"
+            }
+        }
+    },
+    "minimum-stability": "dev",
+    "prefer-stable": true
+}
