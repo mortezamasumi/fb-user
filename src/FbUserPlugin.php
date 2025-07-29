@@ -4,6 +4,7 @@ namespace Mortezamasumi\FbUser;
 
 use Filament\Contracts\Plugin;
 use Filament\Panel;
+use Mortezamasumi\FbUser\Resources\UserResource;
 
 class FbUserPlugin implements Plugin
 {
@@ -14,8 +15,8 @@ class FbUserPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resorces([
-            //
+        $panel->resources([
+            UserResource::class,
         ]);
     }
 

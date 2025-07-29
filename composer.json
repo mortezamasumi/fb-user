@@ -22,7 +22,10 @@
     "require": {
         "php": "^8.2",
         "filament/filament": "^4.0",
-        "spatie/laravel-package-tools": "^1.0"
+        "mortezamasumi/fb-profile": "^4.0|dev-main",
+        "mortezamasumi/persian": "^4.0|dev-next",
+        "spatie/laravel-package-tools": "^1.0",
+        "spatie/laravel-permission": "^6.0"
     },
     "require-dev": {
         "nunomaduro/collision": "^8.0",
@@ -66,5 +69,15 @@
         }
     },
     "minimum-stability": "dev",
-    "prefer-stable": true
+    "prefer-stable": true,
+    "repositories": [
+        {
+            "type": "vcs",
+            "url": "https://github.com/mortezamasumi/fb-profile"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/mortezamasumi/persian"
+        }
+    ]
 }

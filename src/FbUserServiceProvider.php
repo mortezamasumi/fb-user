@@ -4,6 +4,10 @@ namespace Mortezamasumi\FbUser;
 
 use Illuminate\Filesystem\Filesystem;
 use Livewire\Features\SupportTesting\Testable;
+use Mortezamasumi\FbUser\Macros\ExportMacroServiceProvider;
+use Mortezamasumi\FbUser\Macros\FormMacroServiceProvider;
+use Mortezamasumi\FbUser\Macros\InfolistMacroServiceProvider;
+use Mortezamasumi\FbUser\Macros\TableMacroServiceProvider;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -28,7 +32,13 @@ class FbUserServiceProvider extends PackageServiceProvider
             ->hasTranslations();
     }
 
-    public function packageRegistered(): void {}
+    public function packageRegistered(): void
+    {
+        $this->app->register(FormMacroServiceProvider::class);
+        $this->app->register(TableMacroServiceProvider::class);
+        $this->app->register(InfolistMacroServiceProvider::class);
+        $this->app->register(ExportMacroServiceProvider::class);
+    }
 
     public function packageBooted(): void
     {
@@ -57,6 +67,7 @@ class FbUserServiceProvider extends PackageServiceProvider
             'create_jobs_table',
             'create_notifications_table',
             'create_users_table',
+            'create_permission_tables',
         ];
     }
 }
