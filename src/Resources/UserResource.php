@@ -20,31 +20,6 @@ use Mortezamasumi\Persian\Facades\Persian;
 
 class UserResource extends Resource
 {
-    // public static function getModel(): string
-    // {
-    //     return config('auth.providers.users.model');
-    // }
-
-    // public static function getPermissionPrefixes(): array
-    // {
-    //     return [
-    //         'view',
-    //         'view_any',
-    //         'create',
-    //         'update',
-    //         'restore',
-    //         'restore_any',
-    //         'replicate',
-    //         'reorder',
-    //         'delete',
-    //         'delete_any',
-    //         'force_delete',
-    //         'force_delete_any',
-    //         'force_change_password',
-    //         'create_role_on_import',
-    //     ];
-    // }
-
     public static function getNavigationIcon(): string
     {
         return config('fb-user.navigation.icon');

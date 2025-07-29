@@ -35,6 +35,7 @@ return new class extends Migration {
             $table->boolean('force_change_password')->default(false);
             $table->string('theme')->nullable()->default('default');
             $table->string('theme_color')->nullable();
+            $table->string('avatar')->nullable();
             $table->rememberToken();
             $table->softDeletes();
             $table->timestamps();
