@@ -5,6 +5,7 @@ namespace Mortezamasumi\FbUser;
 use Filament\Contracts\Plugin;
 use Filament\Panel;
 use Mortezamasumi\FbUser\Resources\UserResource;
+use Mortezamasumi\FbUser\Widgets\NoRoleWidget;
 
 class FbUserPlugin implements Plugin
 {
@@ -15,9 +16,13 @@ class FbUserPlugin implements Plugin
 
     public function register(Panel $panel): void
     {
-        $panel->resources([
-            UserResource::class,
-        ]);
+        $panel
+            ->resources([
+                UserResource::class,
+            ])
+            ->widgets([
+                NoRoleWidget::class,
+            ]);
     }
 
     public function boot(Panel $panel): void

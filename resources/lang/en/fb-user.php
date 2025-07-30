@@ -70,4 +70,7 @@ return [
         'importer_label' => 'Import users',
         'importer_heading' => 'Import users',
     ],
+    'no-role-widget' => [
+        'text' => 'Dear User, Your account has not yet been approved by the admin. Once it is approved, you will gain access to various sections of the application. If your account is not approved within :hours hours of its creation, it will be automatically deleted.'
+    ]
 ];

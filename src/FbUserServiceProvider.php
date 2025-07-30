@@ -4,10 +4,6 @@ namespace Mortezamasumi\FbUser;
 
 use Illuminate\Filesystem\Filesystem;
 use Livewire\Features\SupportTesting\Testable;
-use Mortezamasumi\FbUser\Macros\ExportMacroServiceProvider;
-use Mortezamasumi\FbUser\Macros\FormMacroServiceProvider;
-use Mortezamasumi\FbUser\Macros\InfolistMacroServiceProvider;
-use Mortezamasumi\FbUser\Macros\TableMacroServiceProvider;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -16,6 +12,7 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 class FbUserServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'fb-user';
+    public static string $viewNamespace = 'fb-user';
 
     public function configurePackage(Package $package): void
     {
@@ -29,15 +26,13 @@ class FbUserServiceProvider extends PackageServiceProvider
             })
             ->hasConfigFile()
             ->hasMigrations($this->getMigrations())
-            ->hasTranslations();
+            ->hasTranslations()
+            ->hasViews();
     }
 
     public function packageRegistered(): void
     {
-        $this->app->register(FormMacroServiceProvider::class);
-        $this->app->register(TableMacroServiceProvider::class);
-        $this->app->register(InfolistMacroServiceProvider::class);
-        $this->app->register(ExportMacroServiceProvider::class);
+        //
     }
 
     public function packageBooted(): void
@@ -45,6 +40,7 @@ class FbUserServiceProvider extends PackageServiceProvider
         // Handle Stubs
         if (app()->runningInConsole()) {
             foreach (app(Filesystem::class)->files(__DIR__.'/../stubs/') as $file) {
+                // dd($file);
                 $this->publishes([
                     $file->getRealPath() => base_path("stubs/fb-user/{$file->getFilename()}"),
                 ], 'fb-user-stubs');

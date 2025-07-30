@@ -58,8 +58,7 @@ class UsersTable
                     ->badge(),
                 ToggleColumn::make('active')
                     ->label(__('fb-user::fb-user.table.active'))
-                    // ->visible(Auth::user()->can('update_user')),
-                    ->extraAttributes(fn (Model $record) => ['class' => $record->hasRole('super_admin') ? 'hidden' : '']),
+                    ->disabled(fn (?Model $record) => $record?->hasRole('super_admin')),
                 TextColumn::make('created_by')
                     ->label(__('Created by'))
                     ->sortable()
