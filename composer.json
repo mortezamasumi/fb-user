@@ -22,7 +22,7 @@
     "require": {
         "php": "^8.2",
         "filament/filament": "^4.0",
-        "mortezamasumi/fb-profile": "^4.0|dev-main",
+        "mortezamasumi/fb-auth": "^4.0|dev-main",
         "mortezamasumi/persian": "^4.0|dev-next",
         "spatie/laravel-package-tools": "^1.0",
         "spatie/laravel-permission": "^6.0"
@@ -73,7 +73,11 @@
     "repositories": [
         {
             "type": "vcs",
-            "url": "https://github.com/mortezamasumi/fb-profile"
+            "url": "https://github.com/mortezamasumi/fb-auth"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/mortezamasumi/sms"
         },
         {
             "type": "vcs",
