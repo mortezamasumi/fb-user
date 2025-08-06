@@ -23,7 +23,7 @@
         "php": "^8.2",
         "filament/filament": "^4.0",
         "mortezamasumi/fb-auth": "^4.0|dev-main",
-        "mortezamasumi/persian": "^4.0|dev-next",
+        "mortezamasumi/fb-profile": "^4.0|dev-main",
         "spatie/laravel-package-tools": "^1.0",
         "spatie/laravel-permission": "^6.0"
     },
@@ -77,11 +77,15 @@
         },
         {
             "type": "vcs",
-            "url": "https://github.com/mortezamasumi/sms"
+            "url": "https://github.com/mortezamasumi/fb-sms"
         },
         {
             "type": "vcs",
-            "url": "https://github.com/mortezamasumi/persian"
+            "url": "https://github.com/mortezamasumi/fb-persian"
+        },
+        {
+            "type": "vcs",
+            "url": "https://github.com/mortezamasumi/fb-profile"
         }
     ]
 }

@@ -11,12 +11,12 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
+use Mortezamasumi\FbPersian\Facades\FbPersian;
 use Mortezamasumi\FbUser\Resources\Pages\CreateUser;
 use Mortezamasumi\FbUser\Resources\Pages\EditUser;
 use Mortezamasumi\FbUser\Resources\Pages\ListUsers;
 use Mortezamasumi\FbUser\Resources\Schemas\UserForm;
 use Mortezamasumi\FbUser\Resources\Tables\UsersTable;
-use Mortezamasumi\Persian\Facades\Persian;
 
 class UserResource extends Resource
 {
@@ -73,7 +73,7 @@ class UserResource extends Resource
     public static function getNavigationBadge(): ?string
     {
         return config('fb-user.navigation.show_count')
-            ? Persian::digit(
+            ? FbPersian::digit(
                 static::getModel()::when(
                     ! Auth::user()->hasRole('super_admin'),
                     fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
