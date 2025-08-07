@@ -21,6 +21,7 @@
     ],
     "require": {
         "php": "^8.2",
+        "bezhansalleh/filament-shield": "^4.0",
         "filament/filament": "^4.0",
         "mortezamasumi/fb-auth": "^4.0|dev-main",
         "mortezamasumi/fb-profile": "^4.0|dev-main",
