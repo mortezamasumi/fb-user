@@ -1,13 +1,11 @@
 <?php
 
 return [
-    'resource' => [
-        'navigation' => [
-            'label' => 'Users',
-            'user' => 'User',
-            'users' => 'Users',
-            'group' => 'System',
-        ],
+    'navigation' => [
+        'label' => 'Users',
+        'user' => 'User',
+        'users' => 'Users',
+        'group' => 'System',
     ],
     'form' => [
         'first_name' => 'First name',

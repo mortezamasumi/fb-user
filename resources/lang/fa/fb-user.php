@@ -1,13 +1,11 @@
 <?php
 
 return [
-    'resource' => [
-        'navigation' => [
-            'label' => 'کاربران',
-            'user' => 'کاربر',
-            'users' => 'کاربران',
-            'group' => 'سامانه',
-        ],
+    'navigation' => [
+        'label' => 'کاربران',
+        'user' => 'کاربر',
+        'users' => 'کاربران',
+        'group' => 'سامانه',
     ],
     'form' => [
         'first_name' => 'نام',
