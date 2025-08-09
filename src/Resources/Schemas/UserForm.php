@@ -68,7 +68,8 @@ class UserForm
                 ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
             Toggle::make('force_change_password')
                 ->label(__('fb-user::fb-user.form.force_change_password'))
-                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
+                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin'))
+                ->columnSpan(2),
         ];
     }
 
