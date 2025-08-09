@@ -2,7 +2,10 @@
 
 namespace Mortezamasumi\FbUser;
 
+use Filament\Support\Assets\Css;
+use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Filesystem\Filesystem;
+use Illuminate\Support\Facades\App;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
@@ -30,24 +33,21 @@ class FbUserServiceProvider extends PackageServiceProvider
             ->hasViews();
     }
 
-    public function packageRegistered(): void
-    {
-        //
-    }
-
     public function packageBooted(): void
     {
-        // Handle Stubs
-        if (app()->runningInConsole()) {
+        FilamentAsset::register(
+            $this->getAssets(),
+            $this->getAssetPackageName()
+        );
+
+        if (App::runningInConsole()) {
             foreach (app(Filesystem::class)->files(__DIR__.'/../stubs/') as $file) {
-                // dd($file);
                 $this->publishes([
                     $file->getRealPath() => base_path("stubs/fb-user/{$file->getFilename()}"),
                 ], 'fb-user-stubs');
             }
         }
 
-        // Testing
         Testable::mixin(new TestsFbUser);
     }
 
@@ -64,6 +64,21 @@ class FbUserServiceProvider extends PackageServiceProvider
             'create_notifications_table',
             'create_users_table',
             'create_permission_tables',
+        ];
+    }
+
+    protected function getAssetPackageName(): ?string
+    {
+        return 'mortezamasumi/fb-user';
+    }
+
+    /**
+     * @return array<Asset>
+     */
+    protected function getAssets(): array
+    {
+        return [
+            Css::make('fb-user-styles', __DIR__.'/../resources/dist/css/index.css'),
         ];
     }
 }
