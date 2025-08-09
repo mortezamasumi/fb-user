@@ -18,6 +18,7 @@ return [
         'username' => 'Username',
         'roles' => 'Roles',
         'user_profile' => 'Profile',
+        'active' => 'Active',
         'account' => 'Account',
         'password' => 'Password',
         'expired_at' => 'Account expire at',
