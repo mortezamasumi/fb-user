@@ -2,9 +2,8 @@
 
 return [
     'navigation' => [
-        'label' => 'کاربران',
-        'user' => 'کاربر',
-        'users' => 'کاربران',
+        'label' => 'کاربر',
+        'plural_label' => 'کاربران',
         'group' => 'سامانه',
     ],
     'form' => [

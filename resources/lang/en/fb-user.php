@@ -2,9 +2,8 @@
 
 return [
     'navigation' => [
-        'label' => 'Users',
-        'user' => 'User',
-        'users' => 'Users',
+        'label' => 'User',
+        'plural_label' => 'Users',
         'group' => 'System',
     ],
     'form' => [

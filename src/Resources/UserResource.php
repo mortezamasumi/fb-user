@@ -10,34 +10,36 @@ use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Mortezamasumi\FbPersian\Facades\FbPersian;
+use Illuminate\Support\Number;
 use Mortezamasumi\FbUser\Resources\Pages\CreateUser;
 use Mortezamasumi\FbUser\Resources\Pages\EditUser;
 use Mortezamasumi\FbUser\Resources\Pages\ListUsers;
 use Mortezamasumi\FbUser\Resources\Schemas\UserForm;
 use Mortezamasumi\FbUser\Resources\Tables\UsersTable;
+use BackedEnum;
+use UnitEnum;
 
-class UserResource extends Resource
+class UserResource extends Resource implements HasShieldPermissions
 {
-    public static function getNavigationIcon(): string
+    public static function getPermissionPrefixes(): array
     {
-        return config('fb-user.navigation.icon');
-    }
-
-    public static function getNavigationSort(): ?int
-    {
-        return config('fb-user.navigation.sort');
-    }
-
-    public static function getNavigationLabel(): string
-    {
-        return __(config('fb-user.navigation.label'));
-    }
-
-    public static function getNavigationGroup(): ?string
-    {
-        return __(config('fb-user.navigation.group'));
+        return [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'restore',
+            'restore_any',
+            'replicate',
+            'reorder',
+            'delete',
+            'delete_any',
+            'force_delete',
+            'force_delete_any',
+            'export',
+        ];
     }
 
     public static function getModelLabel(): string
@@ -50,38 +52,59 @@ class UserResource extends Resource
         return __(config('fb-user.navigation.plural_model_label'));
     }
 
-    public static function getNavigationParentItem(): ?string
+    public static function getNavigationGroup(): string|UnitEnum|null
     {
-        return config('fb-user.navigation.parent_item');
+        return __(config('fb-user.navigation.group'));
     }
 
-    public static function getActiveNavigationIcon(): string|Htmlable|null
+    public static function getNavigationParentItem(): ?string
+    {
+        return __(config('fb-user.navigation.parent_item'));
+    }
+
+    public static function getNavigationIcon(): string|BackedEnum|Htmlable|null
+    {
+        return config('fb-user.navigation.icon');
+    }
+
+    public static function getActiveNavigationIcon(): string|BackedEnum|Htmlable|null
     {
         return config('fb-user.navigation.active_icon') ?? static::getNavigationIcon();
     }
 
-    public static function getGlobalSearchResultTitle(Model $record): string
-    {
-        return $record->getReverseName();
-    }
-
-    public static function getGloballySearchableAttributes(): array
-    {
-        return ['username', 'first_name', 'last_name', 'nid', 'profile'];
-    }
-
     public static function getNavigationBadge(): ?string
     {
-        return config('fb-user.navigation.show_count')
-            ? FbPersian::digit(
-                static::getModel()::when(
+        return config('fb-user.navigation.badge')
+            ? Number::format(
+                number: static::getModel()::when(
                     ! Auth::user()->hasRole('super_admin'),
                     fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
                 )
                     ->where('active', true)
                     ->count(),
+                locale: App::getLocale()
             )
             : null;
+    }
+
+    public static function getNavigationBadgeTooltip(): ?string
+    {
+        return config('fb-user.navigation.badge_tooltip');
+    }
+
+    public static function getNavigationSort(): ?int
+    {
+        return config('fb-user.navigation.sort');
+    }
+
+    public static function getGlobalSearchResultTitle(Model $record): string
+    {
+        return $record->reverseName;
+    }
+
+    public static function getGloballySearchableAttributes(): array
+    {
+        return ['username', 'first_name', 'last_name', 'nid', 'profile'];
     }
 
     public static function form(Schema $schema): Schema

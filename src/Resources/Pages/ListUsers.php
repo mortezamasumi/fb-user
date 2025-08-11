@@ -18,12 +18,6 @@ class ListUsers extends ListRecords
     protected function getHeaderActions(): array
     {
         return [
-            // ExportAction::make('export-demography-info')
-            //     ->label('filament-base::filament-base.export_demography_info')
-            //     ->exporter(DemographyExporter::class)
-            //     ->modal(false)
-            //     ->modifyQueryUsing(fn($query) => $query->role(roles: ['super_admin'], without: true))
-            //     ->visible(auth()->user()->can('page_Demography')),
             // ExportAction::make('export-users')
             //     ->label(__('fbase::fbase.exporter.exporter_label'))
             //     ->modalHeading(__('fbase::fbase.exporter.exporter_heading'))
