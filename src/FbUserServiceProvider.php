@@ -2,10 +2,12 @@
 
 namespace Mortezamasumi\FbUser;
 
+use Filament\Facades\Filament;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Filesystem\Filesystem;
 use Illuminate\Support\Facades\App;
+use Illuminate\Support\Facades\Auth;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;

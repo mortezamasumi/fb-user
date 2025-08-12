@@ -64,7 +64,7 @@ return [
         'email' => 'پست الکترونیک',
         'mobile' => 'تلفن همراه',
         'active' => 'فعال',
-        'account_expires_at' => 'اعتبار تا',
+        'expired_at' => 'اعتبار تا',
         'roles' => 'نقش‌ها',
         'create_role_if_not_exists' => 'ایجاد نقش در صورت عدم وجود',
         'importer_label' => 'بارگذاری کاربران',

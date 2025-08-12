@@ -9,7 +9,6 @@ use Filament\Tables\Table;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
@@ -39,6 +38,7 @@ class UserResource extends Resource implements HasShieldPermissions
             'force_delete',
             'force_delete_any',
             'export',
+            'create_role_on_import',
         ];
     }
 
@@ -124,17 +124,5 @@ class UserResource extends Resource implements HasShieldPermissions
             'create' => CreateUser::route('/create'),
             'edit' => EditUser::route('/{record}/edit'),
         ];
-    }
-
-    public static function getEloquentQuery(): Builder
-    {
-        return parent::getEloquentQuery()
-            ->withoutGlobalScopes([
-                SoftDeletingScope::class,
-            ])
-            ->when(
-                ! Auth::user()->hasRole('super_admin'),
-                fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
-            );
     }
 }

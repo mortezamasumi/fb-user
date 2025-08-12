@@ -72,4 +72,9 @@ class UserPolicy
     {
         return $user->can('export_user');
     }
+
+    public function createRoleOnImport($user): bool
+    {
+        return $user->can('create_role_on_import_user');
+    }
 }

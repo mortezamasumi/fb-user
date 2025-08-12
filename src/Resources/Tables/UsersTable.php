@@ -19,6 +19,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
 
@@ -27,6 +28,12 @@ class UsersTable
     public static function configure(Table $table): Table
     {
         return $table
+            ->modifyQueryUsing(fn ($query) => $query
+                ->withoutGlobalScope(SoftDeletingScope::class)
+                ->unless(
+                    Auth::user()->hasRole('super_admin'),
+                    fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
+                ))
             ->columns([
                 ImageColumn::make('avatar')
                     ->label(__('fb-user::fb-user.table.avatar'))
