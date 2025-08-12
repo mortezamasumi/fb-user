@@ -59,8 +59,8 @@ class UserForm
                         )
                 )
                 ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
-            DateTimePicker::make('expired_at')
-                ->label(__('fb-user::fb-user.form.expired_at'))
+            DateTimePicker::make('expiration_date')
+                ->label(__('fb-user::fb-user.form.expiration_date'))
                 ->jDateTime()
                 ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
             Toggle::make('active')

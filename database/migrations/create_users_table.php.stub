@@ -30,7 +30,7 @@ return new class extends Migration {
             $table->string('mobile')->nullable();
             $table->json('demography')->nullable();
             $table->json('mars')->nullable();
-            $table->timestamp('expired_at')->nullable();
+            $table->timestamp('expiration_date')->nullable();
             $table->boolean('active')->default(true);
             $table->boolean('force_change_password')->default(false);
             $table->string('theme')->nullable()->default('default');

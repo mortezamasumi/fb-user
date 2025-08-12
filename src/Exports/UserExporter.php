@@ -35,7 +35,7 @@ class UserExporter extends Exporter
             ExportColumn::make('active')
                 ->label(__('fb-user::fb-user.exporter.active')),
             ExportColumn::make('account_expires_at')
-                ->label(__('fb-user::fb-user.exporter.expired_at'))
+                ->label(__('fb-user::fb-user.exporter.expiration_date'))
                 ->jDate(),
             ExportColumn::make('roles.name')
                 ->label(__('fb-user::fb-user.exporter.roles')),

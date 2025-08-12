@@ -41,7 +41,7 @@ abstract class User extends Authenticatable implements
         'profile',
         'demography',
         'mars',
-        'expired_at',
+        'expiration_date',
         'active',
         'force_change_password',
         'theme',
@@ -54,7 +54,7 @@ abstract class User extends Authenticatable implements
         return [
             'password' => 'hashed',
             'email_verified_at' => 'datetime',
-            'expired_at' => 'datetime',
+            'expiration_date' => 'datetime',
             'gender' => GenderEnum::class,
             'birth_date' => 'datetime',
             'profile' => 'array',

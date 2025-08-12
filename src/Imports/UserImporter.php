@@ -103,8 +103,8 @@ class UserImporter extends Importer
                 ),
             ImportColumn::make('active')
                 ->label(__('fb-user::fb-user.importer.active')),
-            ImportColumn::make('expired_at')
-                ->label(__('fb-user::fb-user.importer.expired_at'))
+            ImportColumn::make('expiration_date')
+                ->label(__('fb-user::fb-user.importer.expiration_date'))
                 ->fillRecordUsing(function (Model $record, ?string $state): void {
                     try {
                         throw_unless($state, 'is empty');
@@ -114,14 +114,14 @@ class UserImporter extends Importer
                         if ($date->year < 1500) {
                             $dateTime = CalendarUtils::toGregorianDate($date->year, $date->month, $date->day);
 
-                            $record->expired_at = Carbon::createFromTimestamp($dateTime->getTimestamp(), $dateTime->getTimezone());
+                            $record->expiration_date = Carbon::createFromTimestamp($dateTime->getTimestamp(), $dateTime->getTimezone());
 
-                            $record->expired_at->setTimeFrom($date);
+                            $record->expiration_date->setTimeFrom($date);
                         } else {
-                            $record->expired_at = $date;
+                            $record->expiration_date = $date;
                         }
                     } catch (Exception $e) {
-                        $record->expired_at = null;
+                        $record->expiration_date = null;
                     }
                 }),
             ImportColumn::make('roles')
