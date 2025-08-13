@@ -48,17 +48,15 @@ class UserExporter extends Exporter
             $body = 'برون برد انجام شد و '.Number::format(number: number_format($export->successful_rows), locale: App::getLocale()).' سطر ایجاد شد';
 
             if ($failedRowsCount = $export->getFailedRowsCount()) {
-                $postfix = $failedRowsCount > 1 ? '' : '';
-
                 $body .= 'و تعداد '
                     .Number::format(number: number_format($failedRowsCount), locale: App::getLocale())
                     .' سطر دارای خطا بود و ایجاد نشد';
             }
         } else {
-            $body = 'Your education export has completed and '.number_format($export->successful_rows).' '.Str::plural('row', $export->successful_rows).' exported.';
+            $body = 'Export has completed and '.number_format($export->successful_rows).' '.Str::plural('row', $export->successful_rows).' exported.';
 
             if ($failedRowsCount = $export->getFailedRowsCount()) {
-                $body .= ' '.number_format($failedRowsCount).' '.Str::plural('row', $failedRowsCount).' failed to export.';
+                $body .= ', '.number_format($failedRowsCount).' '.Str::plural('row', $failedRowsCount).' failed to export.';
             }
         }
 

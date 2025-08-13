@@ -9,16 +9,38 @@ use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Forms\Components\Checkbox;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
-use Mortezamasumi\Fbase\Enums\GenderEnum;
+use Illuminate\Support\Number;
 use Mortezamasumi\FbAuth\Enums\AuthType;
-use Mortezamasumi\Persian\Facades\Persian;
+use Mortezamasumi\FbProfile\Enums\GenderEnum;
 use Spatie\Permission\Models\Role;
 use Exception;
 
 class UserImporter extends Importer
 {
+    public static function getDate($state): ?Carbon
+    {
+        try {
+            throw_unless($state);
+            throw_unless(preg_match('/[- \/]/', $state));
+
+            $date = Carbon::parse($state);
+
+            if ($date->year < 1500) {
+                $dateTime = CalendarUtils::toGregorianDate($date->year, $date->month, $date->day);
+
+                $date = Carbon::createFromTimestamp($dateTime->getTimestamp(), $dateTime->getTimezone());
+
+                $date->setTimeFrom($date);
+            }
+        } catch (Exception $e) {
+            $date = null;
+        }
+
+        return $date;
+    }
+
     public static function getColumns(): array
     {
         return [
@@ -44,33 +66,11 @@ class UserImporter extends Importer
             ImportColumn::make('gender')
                 ->label(__('fb-user::fb-user.importer.gender'))
                 ->fillRecordUsing(function (Model $record, ?string $state): void {
-                    try {
-                        $record->gender = GenderEnum::tryFrom($state);
-                    } catch (Exception $e) {
-                        $record->gender = GenderEnum::Undefined;
-                    }
+                    $record->gender = GenderEnum::tryFrom($state) ?? GenderEnum::Undefined;
                 }),
             ImportColumn::make('birth_date')
                 ->label(__('fb-user::fb-user.importer.birth_date'))
-                ->fillRecordUsing(function (Model $record, ?string $state): void {
-                    try {
-                        throw_unless($state, 'is empty');
-
-                        $date = Carbon::parse($state);
-
-                        if ($date->year < 1500) {
-                            $dateTime = CalendarUtils::toGregorianDate($date->year, $date->month, $date->day);
-
-                            $record->birth_date = Carbon::createFromTimestamp($dateTime->getTimestamp(), $dateTime->getTimezone());
-
-                            $record->birth_date->setTimeFrom($date);
-                        } else {
-                            $record->birth_date = $date;
-                        }
-                    } catch (Exception $e) {
-                        $record->birth_date = null;
-                    }
-                }),
+                ->fillRecordUsing(fn (Model $record, ?string $state) => $record->birth_date = static::getDate($state)),
             ImportColumn::make('username')
                 ->label(__('fb-user::fb-user.importer.username'))
                 ->requiredMapping(config('fb-profile.username_required'))
@@ -105,25 +105,7 @@ class UserImporter extends Importer
                 ->label(__('fb-user::fb-user.importer.active')),
             ImportColumn::make('expiration_date')
                 ->label(__('fb-user::fb-user.importer.expiration_date'))
-                ->fillRecordUsing(function (Model $record, ?string $state): void {
-                    try {
-                        throw_unless($state, 'is empty');
-
-                        $date = Carbon::parse($state);
-
-                        if ($date->year < 1500) {
-                            $dateTime = CalendarUtils::toGregorianDate($date->year, $date->month, $date->day);
-
-                            $record->expiration_date = Carbon::createFromTimestamp($dateTime->getTimestamp(), $dateTime->getTimezone());
-
-                            $record->expiration_date->setTimeFrom($date);
-                        } else {
-                            $record->expiration_date = $date;
-                        }
-                    } catch (Exception $e) {
-                        $record->expiration_date = null;
-                    }
-                }),
+                ->fillRecordUsing(fn (Model $record, ?string $state) => $record->expiration_date = static::getDate($state)),
             ImportColumn::make('roles')
                 ->label(__('fb-user::fb-user.importer.roles'))
                 ->requiredMapping()
@@ -138,53 +120,46 @@ class UserImporter extends Importer
     public function resolveRecord(): ?Model
     {
         /** @disregard */
-        return Auth::getProvider()->getModel()::firstOrNew(match (config('fb-auth.auth_type')) {
-            AuthType::User => ['username' => $this->data['username']],
-            AuthType::Mobile => ['mobile' => $this->data['mobile']],
-            AuthType::Code => ['email' => $this->data['email']],
-            AuthType::Link => ['email' => $this->data['email']],
-        });
+        return Auth::getProvider()->getModel()::firstOrNew(config('fb-auth.auth_type')->resolveRecord($this->data));
     }
 
-    // protected function afterFill(): void
-    // {
-    //     $this->getRecord()->password = $this->data['password'] ?? $this->getRecord()->username;
-    // }
+    protected function afterFill(): void
+    {
+        $this->getRecord()->password = $this->data['password'] ?? $this->getRecord()->username;
+        $this->getRecord()->active = !! $this->getRecord()->active;
+    }
 
-    // protected function afterSave(): void
-    // {
-    //     $roles = array_filter($this->data['roles'], fn ($item) => $item !== 'super_admin');
+    protected function afterSave(): void
+    {
+        $roles = array_filter($this->data['roles'], fn ($item) => $item !== 'super_admin');
 
-    //     if ($this->options['createMissedRoles'] ?? false) {
-    //         array_walk($roles, function ($role) {
-    //             Role::firstOrCreate(
-    //                 ['name' => $role],
-    //                 ['guard_name' => 'web']
-    //             );
-    //         });
-    //     }
+        if ($this->options['createMissedRoles'] ?? false) {
+            array_walk($roles, function ($role) {
+                Role::firstOrCreate(
+                    ['name' => $role],
+                    ['guard_name' => 'web']
+                );
+            });
+        }
 
-    // Role::whereIn('name', $roles)
-    //     ->each(fn ($role) => $role->users()->attach([$this->getRecord()->id]));
-    // }
+        Role::whereIn('name', $roles)
+            ->each(fn ($role) => $role->users()->attach([$this->getRecord()->id]));
+    }
 
     public static function getCompletedNotificationBody(Import $import): string
     {
         if (app()->getLocale() === 'fa') {
-            $postfix = $import->successful_rows > 1 ? '' : '';
-
-            $body = 'بارگذاری انجام شد و '.Persian::enTOfa(number_format($import->successful_rows)).' سطر ایجاد شد'.$postfix;
+            $body = 'بارگذاری انجام شد و '
+                .Number::format(number: number_format($import->successful_rows), locale: App::getLocale()).' سطر ایجاد شد';
 
             if ($failedRowsCount = $import->getFailedRowsCount()) {
-                $postfix = $failedRowsCount > 1 ? '' : '';
-
-                $body .= 'و تعداد '.Persian::enTOfa(number_format($failedRowsCount)).' سطر دارای خطا بود'.$postfix.' و بارگذاری نشد'.$postfix;
+                $body .= 'و تعداد '.Number::format(number: number_format($failedRowsCount), locale: App::getLocale()).' سطر دارای خطا بود و بارگذاری نشد';
             }
         } else {
-            $body = 'Your users import has completed and '.number_format($import->successful_rows).' '.str('row')->plural($import->successful_rows).' imported.';
+            $body = 'Import has completed and '.number_format($import->successful_rows).' '.str('row')->plural($import->successful_rows).' imported.';
 
             if ($failedRowsCount = $import->getFailedRowsCount()) {
-                $body .= ' '.number_format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to import.';
+                $body .= ', '.number_format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to import.';
             }
         }
 

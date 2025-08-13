@@ -6,9 +6,9 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
@@ -67,14 +67,7 @@ abstract class User extends Authenticatable implements
     protected static function booted()
     {
         static::saving(function ($user) {
-            if (
-                $user->isDirty(match (config('fb-auth.auth_type')) {
-                    AuthType::Mobile => 'mobile',
-                    AuthType::Code,
-                    AuthType::Link => 'email',
-                    default => null,
-                })
-            ) {
+            if ($user->isDirty(config('fb-auth.auth_type')->unVerifyAttribute())) {
                 $user->email_verified_at = null;
             }
         });

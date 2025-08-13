@@ -26,8 +26,7 @@ class FbUserServiceProvider extends PackageServiceProvider
             ->hasInstallCommand(function (InstallCommand $command) {
                 $command
                     ->publishConfigFile()
-                    ->publishMigrations()
-                    ->askToRunMigrations();
+                    ->publishMigrations();
             })
             ->hasConfigFile()
             ->hasMigrations($this->getMigrations())
@@ -41,14 +40,6 @@ class FbUserServiceProvider extends PackageServiceProvider
             $this->getAssets(),
             $this->getAssetPackageName()
         );
-
-        if (App::runningInConsole()) {
-            foreach (app(Filesystem::class)->files(__DIR__.'/../stubs/') as $file) {
-                $this->publishes([
-                    $file->getRealPath() => base_path("stubs/fb-user/{$file->getFilename()}"),
-                ], 'fb-user-stubs');
-            }
-        }
 
         Testable::mixin(new TestsFbUser);
     }
