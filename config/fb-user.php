@@ -1,10 +1,7 @@
 <?php
 
 return [
-    'setup' => [
-        'user_id_column_type' => 'uuid',
-        'remove_unattend_user_hours' => env('REMOVE_UN_ATTEND_USER_HOURS', 48),
-    ],
+    'remove_unattend_user_hours' => env('REMOVE_UN_ATTEND_USER_HOURS', 48),
     'navigation' => [
         'model_label' => 'fb-user::fb-user.navigation.label',
         'plural_model_label' => 'fb-user::fb-user.navigation.plural_label',

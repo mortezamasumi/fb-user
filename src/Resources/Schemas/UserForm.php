@@ -2,6 +2,7 @@
 
 namespace Mortezamasumi\FbUser\Resources\Schemas;
 
+use Exception;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -14,6 +15,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbProfile\Component\Profile;
+use Mortezamasumi\FbUser\Resources\UserResource;
 
 class UserForm
 {
@@ -35,6 +37,9 @@ class UserForm
                 ])
                     ->columnSpanFull()
                     ->from('md'),
+                Section::make(__('fb-user::fb-user.form.role_related'))
+                    ->schema(UserResource::getModel()::extraFormSection())
+                    ->visible(fn () => count(UserResource::getModel()::extraFormSection())),
             ])
             ->columns(1);
     }
@@ -53,8 +58,8 @@ class UserForm
                     name: 'roles',
                     titleAttribute: 'name',
                     modifyQueryUsing: fn (Builder $query) => $query
-                        ->when(
-                            ! Auth::user()->hasRole('super_admin'),
+                        ->unless(
+                            Auth::user()->hasRole('super_admin'),
                             fn (Builder $query) => $query->where('name', '<>', 'super_admin')
                         )
                 )

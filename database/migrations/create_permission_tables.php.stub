@@ -1,5 +1,6 @@
 <?php
 
+use Illuminate\Database\Eloquent\Concerns\HasUuids;
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
@@ -55,7 +56,10 @@ return new class extends Migration {
 
             $table->string('model_type');
 
-            if (config('fb-user.setup.user_id_column_type') === 'uuid') {
+            /** @disregard */
+            $traits = class_uses_recursive(Auth::getProvider()->getModel());
+
+            if (in_array(HasUuids::class, $traits)) {
                 $table->uuid($columnNames['model_morph_key']);
             } else {
                 $table->unsignedBigInteger($columnNames['model_morph_key']);
@@ -89,7 +93,10 @@ return new class extends Migration {
 
             $table->string('model_type');
 
-            if (config('fb-user.setup.user_id_column_type') === 'uuid') {
+            /** @disregard */
+            $traits = class_uses_recursive(Auth::getProvider()->getModel());
+
+            if (in_array(HasUuids::class, $traits)) {
                 $table->uuid($columnNames['model_morph_key']);
             } else {
                 $table->unsignedBigInteger($columnNames['model_morph_key']);

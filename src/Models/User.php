@@ -6,12 +6,13 @@ use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
 use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Mortezamasumi\FbAuth\Enums\AuthType;
 use Mortezamasumi\FbProfile\Enums\GenderEnum;
 use Mortezamasumi\FbUser\Traits\HasCascadeOperation;
 use Spatie\Permission\Traits\HasRoles;
@@ -67,8 +68,12 @@ abstract class User extends Authenticatable implements
     {
         static::saving(function ($user) {
             if (
-                (config('fbase.resource.users.form.email_required') && $user->isDirty(['email'])) ||
-                (config('fbase.resource.users.form.mobile_required') && $user->isDirty(['mobile']))
+                $user->isDirty(match (config('fb-auth.auth_type')) {
+                    AuthType::Mobile => 'mobile',
+                    AuthType::Code,
+                    AuthType::Link => 'email',
+                    default => null,
+                })
             ) {
                 $user->email_verified_at = null;
             }
@@ -105,7 +110,7 @@ abstract class User extends Authenticatable implements
     }
 
     /**
-     * required mor messaging, can override by app User model
+     * required for messaging, can override by app User model
      */
     public function scopeMessageTo(Builder $query): Builder
     {
@@ -113,35 +118,12 @@ abstract class User extends Authenticatable implements
     }
 
     /**
-     * following methods will use for mobile-code-verify, if implement
+     * extra elements to user create/edit form, roles has live reaction
      */
-    public function hasVerifiedMobile()
+    public static function extraFormSection(): array
     {
-        return $this->hasVerifiedEmail();
-    }
-
-    public function markMobileAsVerified()
-    {
-        return $this->markEmailAsVerified();
-    }
-
-    public function getMobileForVerification()
-    {
-        return $this->mobile;
-    }
-
-    public function sendMobileVerificationNotification()
-    {
-        //
-    }
-
-    public function getMobileForPasswordReset()
-    {
-        return $this->mobile;
-    }
-
-    public function sendMobilePasswordResetNotification($token)
-    {
-        //
+        return [
+            //
+        ];
     }
 }
