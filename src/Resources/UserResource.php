@@ -2,6 +2,7 @@
 
 namespace Mortezamasumi\FbUser\Resources;
 
+use BackedEnum;
 use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
@@ -17,7 +18,6 @@ use Mortezamasumi\FbUser\Resources\Pages\EditUser;
 use Mortezamasumi\FbUser\Resources\Pages\ListUsers;
 use Mortezamasumi\FbUser\Resources\Schemas\UserForm;
 use Mortezamasumi\FbUser\Resources\Tables\UsersTable;
-use BackedEnum;
 use UnitEnum;
 
 class UserResource extends Resource implements HasShieldPermissions
@@ -39,6 +39,7 @@ class UserResource extends Resource implements HasShieldPermissions
             'force_delete_any',
             'export',
             'create_role_on_import',
+            'force_change_password',
         ];
     }
 

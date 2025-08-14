@@ -2,14 +2,12 @@
 
 namespace Mortezamasumi\FbUser\Resources\Schemas;
 
-use Exception;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;
-use Filament\Forms\Components\Toggle;
 use Filament\Schemas\Components\Flex;
-use Filament\Schemas\Components\Section;
+use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
@@ -23,20 +21,23 @@ class UserForm
     {
         return $schema
             ->components([
-                Section::make(__('fb-user::fb-user.form.user_profile'))
-                    ->schema(Profile::components())
-                    ->columns(3),
+                Grid::make(3)->schema(Profile::components()),
                 Flex::make([
-                    Section::make(__('fb-user::fb-user.form.account'))
-                        ->schema(static::accountInfo())
-                        ->columns(3),
-                    Section::make(__('fb-user::fb-user.form.password'))
-                        ->schema(static::passwordSection(true))
+                    Grid::make(3)->schema(static::accountInfo()),
+                    Grid::make(1)
+                        ->schema([
+                            Checkbox::make('active')
+                                ->label(__('fb-user::fb-user.form.active'))
+                                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
+                            Checkbox::make('force_change_password')
+                                ->label(__('fb-user::fb-user.form.force_change_password'))
+                                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin') && ! Auth::user()->can('force_change_password_user')),
+                        ])
                         ->grow(false)
-                        ->columns(1),
                 ])
-                    ->columnSpanFull()
-                    ->from('md'),
+                    ->from('md')
+                    ->columns(1),
+                Grid::make(4)->schema(static::passwordSection()),
                 ...UserResource::getModel()::extraFormSection(),
             ])
             ->columns(1);
@@ -66,17 +67,10 @@ class UserForm
                 ->label(__('fb-user::fb-user.form.expiration_date'))
                 ->jDateTime()
                 ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
-            Toggle::make('active')
-                ->label(__('fb-user::fb-user.form.active'))
-                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
-            Toggle::make('force_change_password')
-                ->label(__('fb-user::fb-user.form.force_change_password'))
-                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin'))
-                ->columnSpan(2),
         ];
     }
 
-    public static function passwordSection(bool $showForce = false): array
+    public static function passwordSection(): array
     {
         return [
             TextInput::make('password')
@@ -96,9 +90,6 @@ class UserForm
                 ->revealable(filament()->arePasswordsRevealable())
                 ->maxLength(255)
                 ->dehydrated(false),
-            Checkbox::make('force_change_password')
-                ->label(__('fb-user::fb-user.form.force_change_password'))
-                ->visible(Auth::user()->can('force_change_password_user') && $showForce),
         ];
     }
 }
