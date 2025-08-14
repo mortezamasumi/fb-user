@@ -23,15 +23,7 @@ class EditUser extends EditRecord
 
     protected function afterSave(): void
     {
-        $model = $this->getModel();
-
-        if (method_exists($model, 'afterSave')) {
-            $model::afterSave($this);
-        }
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index');
+        /** @disregard */
+        Auth::getProvider()->getModel()::afterSave($this);
     }
 }

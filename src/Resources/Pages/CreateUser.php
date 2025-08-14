@@ -12,15 +12,7 @@ class CreateUser extends CreateRecord
 
     protected function afterCreate(): void
     {
-        $model = $this->getModel();
-
-        if (method_exists($model, 'afterCreate')) {
-            $model::afterCreate($this);
-        }
-    }
-
-    protected function getRedirectUrl(): string
-    {
-        return $this->getResource()::getUrl('index');
+        /** @disregard */
+        Auth::getProvider()->getModel()::afterCreate($this);
     }
 }
