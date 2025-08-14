@@ -2,7 +2,6 @@
 
 namespace Mortezamasumi\FbUser\Resources\Schemas;
 
-use Exception;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -16,6 +15,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbProfile\Component\Profile;
 use Mortezamasumi\FbUser\Resources\UserResource;
+use Exception;
 
 class UserForm
 {
@@ -31,7 +31,7 @@ class UserForm
                         ->schema(static::accountInfo())
                         ->columns(3),
                     Section::make(__('fb-user::fb-user.form.password'))
-                        ->schema(static::passwordSection())
+                        ->schema(static::passwordSection(true))
                         ->grow(false)
                         ->columns(1),
                 ])
@@ -78,7 +78,7 @@ class UserForm
         ];
     }
 
-    public static function passwordSection(): array
+    public static function passwordSection(bool $showForce = false): array
     {
         return [
             TextInput::make('password')
@@ -100,7 +100,7 @@ class UserForm
                 ->dehydrated(false),
             Checkbox::make('force_change_password')
                 ->label(__('fb-user::fb-user.form.force_change_password'))
-                ->visible(Auth::user()->can('force_change_password_user')),
+                ->visible(Auth::user()->can('force_change_password_user') && $showForce),
         ];
     }
 }
