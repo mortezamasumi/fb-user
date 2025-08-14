@@ -25,7 +25,6 @@ return [
         'profile' => [
             'father_name' => 'نام‌پدر',
         ],
-        'role_related' => 'اطلاعات مرتبط با نقش کاربر',
     ],
     'table' => [
         'avatar' => 'عکس',

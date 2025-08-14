@@ -25,7 +25,6 @@ return [
         'profile' => [
             'father_name' => 'Father name',
         ],
-        'role_related' => 'Role related information',
     ],
     'table' => [
         'avatar' => 'Avatar',

@@ -38,9 +38,6 @@ class UserForm
                     ->columnSpanFull()
                     ->from('md'),
                 ...UserResource::getModel()::extraFormSection(),
-                // Section::make(__('fb-user::fb-user.form.role_related'))
-                //     ->schema(UserResource::getModel()::extraFormSection())
-                //     ->visible(fn () => count(UserResource::getModel()::extraFormSection())),
             ])
             ->columns(1);
     }
