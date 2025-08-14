@@ -37,7 +37,7 @@ class UserForm
                 ])
                     ->from('md')
                     ->columns(1),
-                Grid::make(4)->schema(static::passwordSection()),
+                Grid::make(2)->schema(static::passwordSection()),
                 ...UserResource::getModel()::extraFormSection(),
             ])
             ->columns(1);
@@ -66,6 +66,7 @@ class UserForm
             DateTimePicker::make('expiration_date')
                 ->label(__('fb-user::fb-user.form.expiration_date'))
                 ->jDateTime()
+                ->seconds(false)
                 ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
         ];
     }
