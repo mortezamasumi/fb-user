@@ -3,6 +3,7 @@
 namespace Mortezamasumi\FbUser\Resources\Pages;
 
 use Filament\Resources\Pages\CreateRecord;
+use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbUser\Resources\UserResource;
 
 class CreateUser extends CreateRecord
