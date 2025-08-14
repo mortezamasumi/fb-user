@@ -77,4 +77,9 @@ class UserPolicy
     {
         return $user->can('create_role_on_import_user');
     }
+
+    public function forceChangePassword($user): bool
+    {
+        return $user->can('force_change_password_user');
+    }
 }
