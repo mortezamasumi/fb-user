@@ -6,6 +6,7 @@ use Filament\Actions\DeleteAction;
 use Filament\Actions\ForceDeleteAction;
 use Filament\Actions\RestoreAction;
 use Filament\Resources\Pages\EditRecord;
+use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbUser\Resources\UserResource;
 
 class EditUser extends EditRecord
