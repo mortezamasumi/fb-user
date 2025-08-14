@@ -2,6 +2,7 @@
 
 namespace Mortezamasumi\FbUser\Resources\Schemas;
 
+use Exception;
 use Filament\Forms\Components\Checkbox;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
@@ -15,7 +16,6 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbProfile\Component\Profile;
 use Mortezamasumi\FbUser\Resources\UserResource;
-use Exception;
 
 class UserForm
 {
@@ -37,9 +37,10 @@ class UserForm
                 ])
                     ->columnSpanFull()
                     ->from('md'),
-                Section::make(__('fb-user::fb-user.form.role_related'))
-                    ->schema(UserResource::getModel()::extraFormSection())
-                    ->visible(fn () => count(UserResource::getModel()::extraFormSection())),
+                ...UserResource::getModel()::extraFormSection(),
+                // Section::make(__('fb-user::fb-user.form.role_related'))
+                //     ->schema(UserResource::getModel()::extraFormSection())
+                //     ->visible(fn () => count(UserResource::getModel()::extraFormSection())),
             ])
             ->columns(1);
     }
