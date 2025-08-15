@@ -3,6 +3,7 @@
 namespace Mortezamasumi\FbUser;
 
 use Filament\Contracts\Plugin;
+use Filament\Schemas\Components\Form;
 use Filament\Panel;
 use Mortezamasumi\FbUser\Resources\UserResource;
 use Mortezamasumi\FbUser\Widgets\NoRoleWidget;
@@ -27,7 +28,9 @@ class FbUserPlugin implements Plugin
 
     public function boot(Panel $panel): void
     {
-        //
+        Form::configureUsing(function (Form $form) {
+            $form->extraAttributes(['novalidate' => true]);
+        });
     }
 
     public static function make(): static
