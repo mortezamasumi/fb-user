@@ -30,6 +30,11 @@ class FbUserServiceProvider extends PackageServiceProvider
             ->hasViews();
     }
 
+    public function packageRegistered()
+    {
+        config(['filament-shield.shield_resource.navigation_sort' => 9980]);
+    }
+
     public function packageBooted(): void
     {
         FilamentAsset::register(

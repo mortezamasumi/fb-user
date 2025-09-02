@@ -11,6 +11,6 @@ return [
         'active_icon' => null,
         'badge' => true,
         'badge_tooltip' => null,
-        'sort' => 9000,
+        'sort' => 9990,
     ],
 ];
