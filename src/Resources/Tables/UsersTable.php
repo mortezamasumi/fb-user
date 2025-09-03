@@ -19,9 +19,8 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 
 class UsersTable
 {
@@ -29,7 +28,7 @@ class UsersTable
     {
         return $table
             ->modifyQueryUsing(fn ($query) => $query
-                ->withoutGlobalScope(SoftDeletingScope::class)
+                ->withTrashed()
                 ->unless(
                     Auth::user()->hasRole('super_admin'),
                     fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
