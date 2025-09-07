@@ -8,7 +8,7 @@ return [
         'group' => 'fb-user::fb-user.navigation.group',
         'parent_item' => null,
         'icon' => 'heroicon-o-user',
-        'active_icon' => null,
+        'active_icon' => 'heroicon-s-user',
         'badge' => true,
         'badge_tooltip' => null,
         'sort' => 9990,
