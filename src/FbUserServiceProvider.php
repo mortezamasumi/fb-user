@@ -43,23 +43,26 @@ class FbUserServiceProvider extends PackageServiceProvider
             $this->getAssetPackageName()
         );
 
-        config(['filament-shield.resources.manage' => [UserResource::class => [
-            'view',
-            'view_any',
-            'create',
-            'update',
-            'restore',
-            'restore_any',
-            'replicate',
-            'reorder',
-            'delete',
-            'delete_any',
-            'force_delete',
-            'force_delete_any',
-            'export',
-            'create_role_on_import',
-            'force_change_password',
-        ]]]);
+        config(['filament-shield.resources.manage' => [
+            ...config('filament-shield.resources.manage'),
+            UserResource::class => [
+                'view',
+                'view_any',
+                'create',
+                'update',
+                'restore',
+                'restore_any',
+                'replicate',
+                'reorder',
+                'delete',
+                'delete_any',
+                'force_delete',
+                'force_delete_any',
+                'export',
+                'create_role_on_import',
+                'force_change_password',
+            ]
+        ]]);
 
         Testable::mixin(new TestsFbUser);
     }
