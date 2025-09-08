@@ -5,6 +5,7 @@ namespace Mortezamasumi\FbUser;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Livewire\Features\SupportTesting\Testable;
+use Mortezamasumi\FbUser\Resources\UserResource;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
@@ -41,6 +42,24 @@ class FbUserServiceProvider extends PackageServiceProvider
             $this->getAssets(),
             $this->getAssetPackageName()
         );
+
+        config(['filament-shield.resources.manage' => [UserResource::class => [
+            'view',
+            'view_any',
+            'create',
+            'update',
+            'restore',
+            'restore_any',
+            'replicate',
+            'reorder',
+            'delete',
+            'delete_any',
+            'force_delete',
+            'force_delete_any',
+            'export',
+            'create_role_on_import',
+            'force_change_password',
+        ]]]);
 
         Testable::mixin(new TestsFbUser);
     }

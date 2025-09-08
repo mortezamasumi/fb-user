@@ -11,6 +11,6 @@ return [
         'active_icon' => 'heroicon-s-user',
         'badge' => true,
         'badge_tooltip' => null,
-        'sort' => 9990,
+        'sort' => 10,
     ],
 ];

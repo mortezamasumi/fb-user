@@ -31,7 +31,7 @@ class UserForm
                                 ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
                             Checkbox::make('force_change_password')
                                 ->label(__('fb-user::fb-user.form.force_change_password'))
-                                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin') && ! Auth::user()->can('force_change_password_user')),
+                                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin') && ! Auth::user()->can('ForceChangePassword:User')),
                         ])
                         ->grow(false)
                 ])

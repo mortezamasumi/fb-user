@@ -112,7 +112,7 @@ class UserImporter extends Importer
                 ->guess(['Roles', 'نقشها', 'نقش ها', 'نقش‌ها'])
                 ->array(',')
                 ->rules(['required', 'array', 'min:1'])
-                ->nestedRecursiveRules(fn () => Auth::user()->can('create_role') ? [] : ['exists:roles,name'])
+                ->nestedRecursiveRules(fn () => Auth::user()->can('Create:Role') ? [] : ['exists:roles,name'])
                 ->fillRecordUsing(fn () => null),
         ];
     }
@@ -171,7 +171,7 @@ class UserImporter extends Importer
         return [
             Checkbox::make('createMissedRoles')
                 ->label(__('fb-user::fb-user.importer.create_role_if_not_exists'))
-                ->visible(Auth::user()->can('create_role_on_import_user'))
+                ->visible(Auth::user()->can('CreateRoleOnImport:User'))
         ];
     }
 }
