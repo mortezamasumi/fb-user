@@ -7,6 +7,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbUser\Resources\UserResource;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
+use Mortezamasumi\FbUser\Widgets\NoRoleWidget;
 use Spatie\LaravelPackageTools\Commands\InstallCommand;
 use Spatie\LaravelPackageTools\Package;
 use Spatie\LaravelPackageTools\PackageServiceProvider;
@@ -62,6 +63,11 @@ class FbUserServiceProvider extends PackageServiceProvider
                 'create_role_on_import',
                 'force_change_password',
             ]
+        ]]);
+
+        config(['filament-shield.widgets.exclude' => [
+            ...config('filament-shield.widgets.exclude'),
+            NoRoleWidget::class,
         ]]);
 
         Testable::mixin(new TestsFbUser);
