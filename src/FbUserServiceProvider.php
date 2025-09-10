@@ -47,7 +47,7 @@ class FbUserServiceProvider extends PackageServiceProvider
         );
 
         config(['filament-shield.resources.manage' => [
-            ...config('filament-shield.resources.manage'),
+            ...config('filament-shield.resources.manage') ?? [],
             UserResource::class => [
                 'view',
                 'view_any',
@@ -68,7 +68,7 @@ class FbUserServiceProvider extends PackageServiceProvider
         ]]);
 
         config(['filament-shield.widgets.exclude' => [
-            ...config('filament-shield.widgets.exclude'),
+            ...config('filament-shield.widgets.exclude') ?? [],
             NoRoleWidget::class,
         ]]);
 
