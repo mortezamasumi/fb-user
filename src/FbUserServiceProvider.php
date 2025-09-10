@@ -4,6 +4,8 @@ namespace Mortezamasumi\FbUser;
 
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbUser\Resources\UserResource;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
@@ -69,6 +71,8 @@ class FbUserServiceProvider extends PackageServiceProvider
             ...config('filament-shield.widgets.exclude'),
             NoRoleWidget::class,
         ]]);
+
+        Route::get('/fb-user-avatar', fn () => Response::file(__DIR__.'/../resources/images/avatar.png'));
 
         Testable::mixin(new TestsFbUser);
     }
