@@ -19,8 +19,8 @@ use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Collection;
 
 class UsersTable
 {
@@ -92,10 +92,22 @@ class UsersTable
                     ->trueLabel(__('fb-user::fb-user.table.all_users'))
                     ->falseLabel(__('fb-user::fb-user.table.inactive_users'))
                     ->queries(
+                        blank: fn (Builder $query) => $query->where('active', true),
                         true: fn (Builder $query) => $query,
                         false: fn (Builder $query) => $query->where('active', false),
-                        blank: fn (Builder $query) => $query->where('active', true),
-                    ),
+                    )
+                    ->visible(config('fb-user.defaul_users_list_filter') === 'active'),
+                TernaryFilter::make('active_users')
+                    ->label(__('fb-user::fb-user.table.active_users'))
+                    ->placeholder(__('fb-user::fb-user.table.all_users'))
+                    ->trueLabel(__('fb-user::fb-user.table.active_users'))
+                    ->falseLabel(__('fb-user::fb-user.table.inactive_users'))
+                    ->queries(
+                        blank: fn (Builder $query) => $query,
+                        true: fn (Builder $query) => $query->where('active', true),
+                        false: fn (Builder $query) => $query->where('active', false),
+                    )
+                    ->visible(config('fb-user.defaul_users_list_filter') === 'all'),
                 SelectFilter::make('roles')
                     ->label(__('fb-user::fb-user.table.roles'))
                     ->multiple()
