@@ -21,9 +21,10 @@ class UserForm
     {
         return $schema
             ->components([
-                Grid::make(3)->schema(Profile::components()),
+                Grid::make(4)->schema(Profile::components()),
                 Flex::make([
-                    Grid::make(3)->schema(static::accountInfo()),
+                    Grid::make(2)->schema(static::passwordSection()),
+                    Grid::make(2)->schema(static::accountInfo()),
                     Grid::make(1)
                         ->schema([
                             Checkbox::make('active')
@@ -36,9 +37,8 @@ class UserForm
                         ->grow(false)
                 ])
                     ->from('md')
-                    ->columns(1),
-                Grid::make(2)->schema(static::passwordSection()),
-                ...UserResource::getModel()::extraFormSection(),
+                    ->columns(5),
+                Grid::make(1)->schema(UserResource::getModel()::extraFormSection()),
             ])
             ->columns(1);
     }
@@ -52,7 +52,6 @@ class UserForm
                 ->preload()
                 ->required()
                 ->live(debounce: 750, condition: true)
-                ->columnSpan(2)
                 ->relationship(
                     name: 'roles',
                     titleAttribute: 'name',
