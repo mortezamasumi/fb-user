@@ -37,8 +37,8 @@ class UsersTable
                 ImageColumn::make('avatar')
                     ->label(__('fb-user::fb-user.table.avatar'))
                     ->circular()
-                    ->disk('public')
-                    ->visibility('public')
+                    ->disk(config('fb-profile.avatar_disk'))
+                    ->visibility(config('fb-profile.avatar_visibility'))
                     ->default(url('/fb-user-avatar')),
                 TextColumn::make('reverse_name')
                     ->label(__('fb-user::fb-user.table.name'))
