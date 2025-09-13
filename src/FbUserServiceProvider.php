@@ -7,6 +7,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
+use Mortezamasumi\FbUser\Macros\GridMacroServiceProvider;
 use Mortezamasumi\FbUser\Resources\UserResource;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
 use Mortezamasumi\FbUser\Widgets\NoRoleWidget;
@@ -37,6 +38,8 @@ class FbUserServiceProvider extends PackageServiceProvider
     public function packageRegistered()
     {
         config(['filament-shield.shield_resource.navigation_sort' => 9980]);
+
+        $this->app->register(GridMacroServiceProvider::class);
     }
 
     public function packageBooted(): void
