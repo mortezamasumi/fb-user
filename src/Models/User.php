@@ -104,6 +104,38 @@ abstract class User extends Authenticatable implements
     }
 
     /**
+     * Scope a query to search for a user's full name.
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $search
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeWhereFullName(Builder $query, string $search): Builder
+    {
+        return $query->where(function (Builder $query) use ($search) {
+            $query
+                ->where('first_name', 'like', "%{$search}%")
+                ->orWhere('last_name', 'like', "%{$search}%")
+                ->orWhereRaw("CONCAT(first_name, ' ', last_name) LIKE ?", ["%{$search}%"])
+                ->orWhereRaw("CONCAT(last_name, ' ', first_name) LIKE ?", ["%{$search}%"]);
+        });
+    }
+
+    /**
+     * Scope a query to order by a user's full name (last name, then first name).
+     *
+     * @param \Illuminate\Database\Eloquent\Builder $query
+     * @param string $direction
+     * @return \Illuminate\Database\Eloquent\Builder
+     */
+    public function scopeOrderByFullName(Builder $query, string $direction = 'asc'): Builder
+    {
+        return $query
+            ->orderBy('users.last_name', $direction)
+            ->orderBy('users.first_name', $direction);
+    }
+
+    /**
      * required for messaging, can override by app User model
      */
     public function scopeMessageTo(Builder $query): Builder
