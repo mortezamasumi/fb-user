@@ -23,8 +23,8 @@
         "php": "^8.3",
         "bezhansalleh/filament-shield": "^4.0",
         "filament/filament": "^4.0",
-        "mortezamasumi/fb-auth": "^4.0|dev-main",
-        "mortezamasumi/fb-profile": "^4.0|dev-main",
+        "mortezamasumi/fb-auth": "^4.0",
+        "mortezamasumi/fb-profile": "^4.0",
         "spatie/laravel-package-tools": "^1.0",
         "spatie/laravel-permission": "^6.0"
     },
@@ -70,23 +70,5 @@
         }
     },
     "minimum-stability": "stable",
-    "prefer-stable": true,
-    "repositories": [
-        {
-            "type": "vcs",
-            "url": "https://github.com/mortezamasumi/fb-auth"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/mortezamasumi/fb-sms"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/mortezamasumi/fb-persian"
-        },
-        {
-            "type": "vcs",
-            "url": "https://github.com/mortezamasumi/fb-profile"
-        }
-    ]
+    "prefer-stable": true
 }
