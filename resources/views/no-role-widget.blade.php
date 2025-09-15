@@ -1,4 +1,4 @@
-@use('\Mortezamasumi\FbPersian\Facades\FbPersian')
+@use('\Mortezamasumi\FbEssentials\Facades\FbPersian')
 
 <x-filament-widgets::widget>
     <x-filament::section class="text-lg" icon="heroicon-o-exclamation-triangle" icon-color="warning" icon-size="2xl">
