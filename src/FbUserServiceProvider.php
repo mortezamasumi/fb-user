@@ -75,8 +75,6 @@ class FbUserServiceProvider extends PackageServiceProvider
             NoRoleWidget::class,
         ]]);
 
-        Route::get('/fb-user-avatar', fn () => Response::file(__DIR__.'/../resources/images/avatar.png'));
-
         Testable::mixin(new TestsFbUser);
     }
 

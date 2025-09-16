@@ -39,7 +39,7 @@ class UsersTable
                     ->circular()
                     ->disk(config('fb-profile.avatar_disk'))
                     ->visibility(config('fb-profile.avatar_visibility'))
-                    ->default(url('/fb-user-avatar')),
+                    ->default(url('/fb-essentials-assets/avatar.png')),
                 TextColumn::make('reverse_name')
                     ->label(__('fb-user::fb-user.table.name'))
                     ->sortable()
