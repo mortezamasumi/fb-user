@@ -6,10 +6,7 @@ use Filament\Schemas\Components\Utilities\Get;
 use Filament\Schemas\Components\Grid;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Arr;
 use Illuminate\Support\ServiceProvider;
-use Mortezamasumi\FbPersian\Facades\FbPersian;
 use Spatie\Permission\Models\Role;
 use Closure;
 
