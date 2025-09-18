@@ -12,16 +12,25 @@ use Filament\Schemas\Schema;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
-use Mortezamasumi\FbProfile\Component\Profile;
+use Mortezamasumi\FbProfile\Schemas\ProfileForm;
 use Mortezamasumi\FbUser\Resources\UserResource;
 
 class UserForm
 {
     public static function configure(Schema $schema): Schema
     {
+        /** @disregard */
+        $userClass = Auth::getProvider()->getModel();
+
+        if (method_exists($userClass, 'customUserForm')) {
+            return $schema
+                ->components($userClass::customUserForm())
+                ->columns(1);
+        }
+
         return $schema
             ->components([
-                Grid::make(4)->schema(Profile::components()),
+                Grid::make(4)->schema(ProfileForm::components()),
                 Flex::make([
                     Grid::make(2)->schema(static::passwordSection()),
                     Grid::make(2)->schema(static::accountInfo()),
