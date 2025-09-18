@@ -32,8 +32,8 @@ class UserForm
             ->components([
                 Grid::make(4)->schema(ProfileForm::components()),
                 Flex::make([
-                    Grid::make(2)->schema(static::passwordSection()),
-                    Grid::make(2)->schema(static::accountInfo()),
+                    Grid::make(2)->schema(static::passwordComponents()),
+                    Grid::make(2)->schema(static::accountComponents()),
                     Grid::make(1)
                         ->schema([
                             Checkbox::make('active')
@@ -52,7 +52,7 @@ class UserForm
             ->columns(1);
     }
 
-    public static function accountInfo(): array
+    public static function accountComponents(): array
     {
         return [
             Select::make('roles')
@@ -79,7 +79,7 @@ class UserForm
         ];
     }
 
-    public static function passwordSection(): array
+    public static function passwordComponents(): array
     {
         return [
             TextInput::make('password')
