@@ -7,6 +7,7 @@ use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
+use Mortezamasumi\FbEssentials\Facades\FbEssentials;
 use Mortezamasumi\FbUser\Macros\GridMacroServiceProvider;
 use Mortezamasumi\FbUser\Resources\UserResource;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
@@ -37,43 +38,29 @@ class FbUserServiceProvider extends PackageServiceProvider
 
     public function packageRegistered()
     {
-        config(['filament-shield.shield_resource.navigation_sort' => 9980]);
+        // config(['filament-shield.shield_resource.navigation_sort' => 9980]);
 
         $this->app->register(GridMacroServiceProvider::class);
     }
 
     public function packageBooted(): void
     {
+        FbEssentials::filamentShieldAddResource(
+            UserResource::class,
+            [
+                'export',
+                'create_role_on_import',
+                'force_change_password',
+            ],
+            false
+        );
+
+        FbEssentials::filamentShieldExcludeWidget(NoRoleWidget::class);
+
         FilamentAsset::register(
             $this->getAssets(),
             $this->getAssetPackageName()
         );
-
-        config(['filament-shield.resources.manage' => [
-            ...config('filament-shield.resources.manage') ?? [],
-            UserResource::class => [
-                'view',
-                'view_any',
-                'create',
-                'update',
-                'restore',
-                'restore_any',
-                'replicate',
-                'reorder',
-                'delete',
-                'delete_any',
-                'force_delete',
-                'force_delete_any',
-                'export',
-                'create_role_on_import',
-                'force_change_password',
-            ]
-        ]]);
-
-        config(['filament-shield.widgets.exclude' => [
-            ...config('filament-shield.widgets.exclude') ?? [],
-            NoRoleWidget::class,
-        ]]);
 
         Testable::mixin(new TestsFbUser);
     }
