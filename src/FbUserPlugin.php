@@ -28,9 +28,7 @@ class FbUserPlugin implements Plugin
 
     public function boot(Panel $panel): void
     {
-        Form::configureUsing(function (Form $form) {
-            $form->extraAttributes(['novalidate' => true]);
-        });
+        //
     }
 
     public static function make(): static
