@@ -132,12 +132,12 @@ class UsersTable
             ])
             ->toolbarActions([
                 BulkAction::make('active-deactive-users')
-                    ->label(__('fbase::fbase.resource.active.action_label'))
-                    ->modalHeading(__('fbase::fbase.resource.active.action_heading'))
+                    ->label(__('fb-user::fb-user.active_deactive_modal.action_label'))
+                    ->modalHeading(__('fb-user::fb-user.active_deactive_modal.action_heading'))
                     ->modalWidth('sm')
                     ->deselectRecordsAfterCompletion()
                     ->schema([
-                        Toggle::make('active')->label(__('fbase::fbase.resource.active.form_label'))
+                        Toggle::make('active')->label(__('fb-user::fb-user.active_deactive_modal.form_label'))
                     ])
                     ->action(
                         fn (Collection $records, array $data) => $records

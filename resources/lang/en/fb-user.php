@@ -72,5 +72,10 @@ return [
     ],
     'no-role-widget' => [
         'text' => 'Dear User,<br> Your account has not yet been approved by the admin. Once it is approved, you will gain access to various sections of the application. If your account is not approved within :hours hours of its creation, it will be automatically deleted.'
+    ],
+    'active_deactive_modal' => [
+        'action_label' => 'Active/DeActive',
+        'action_heading' => 'Active/DeActive',
+        'form_label' => 'Active',
     ]
 ];
