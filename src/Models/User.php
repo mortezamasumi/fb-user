@@ -100,7 +100,7 @@ abstract class User extends Authenticatable implements
 
     public function getFilamentAvatarUrl(): ?string
     {
-        return asset('storage/'.$this->avatar);
+        return $this->avatar ? asset('storage/'.$this->avatar) : url('/fb-essentials-assets/avatar.png');
     }
 
     /**
