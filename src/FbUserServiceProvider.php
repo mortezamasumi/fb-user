@@ -4,10 +4,12 @@ namespace Mortezamasumi\FbUser;
 
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbEssentials\Facades\FbEssentials;
+use Mortezamasumi\FbUser\Jobs\RemoveUnAttendUsers;
 use Mortezamasumi\FbUser\Macros\GridMacroServiceProvider;
 use Mortezamasumi\FbUser\Resources\UserResource;
 use Mortezamasumi\FbUser\Testing\TestsFbUser;
@@ -38,8 +40,6 @@ class FbUserServiceProvider extends PackageServiceProvider
 
     public function packageRegistered()
     {
-        // config(['filament-shield.shield_resource.navigation_sort' => 9980]);
-
         $this->app->register(GridMacroServiceProvider::class);
     }
 
@@ -61,6 +61,12 @@ class FbUserServiceProvider extends PackageServiceProvider
             $this->getAssets(),
             $this->getAssetPackageName()
         );
+
+        if ($this->app->runningInConsole()) {
+            $this->app->afterResolving(Schedule::class, function (Schedule $schedule) {
+                $schedule->job(new RemoveUnAttendUsers())->hourly();
+            });
+        }
 
         Testable::mixin(new TestsFbUser);
     }
