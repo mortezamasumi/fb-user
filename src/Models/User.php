@@ -5,15 +5,16 @@ namespace Mortezamasumi\FbUser\Models;
 use Filament\Models\Contracts\FilamentUser;
 use Filament\Models\Contracts\HasAvatar;
 use Filament\Models\Contracts\HasName;
+use Filament\Panel;
 use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
-use Filament\Panel;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
-use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Mortezamasumi\FbAuth\Enums\AuthType;
 use Mortezamasumi\FbProfile\Enums\GenderEnum;
 use Mortezamasumi\FbUser\Traits\HasCascadeOperation;
 use Spatie\Permission\Traits\HasRoles;
@@ -101,6 +102,15 @@ abstract class User extends Authenticatable implements
     public function getFilamentAvatarUrl(): ?string
     {
         return $this->avatar ? asset('storage/'.$this->avatar) : url('/fb-essentials-assets/avatar.png');
+    }
+
+    public function getEmailForPasswordReset()
+    {
+        return match (config('fb-auth.auth_type')) {
+            AuthType::Mobile => $this->mobile,
+            AuthType::User => $this->username,
+            default => $this->email,
+        };
     }
 
     /**
