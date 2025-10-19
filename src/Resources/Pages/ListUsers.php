@@ -7,8 +7,8 @@ use Filament\Actions\ExportAction;
 use Filament\Actions\ImportAction;
 use Filament\Resources\Pages\ListRecords;
 use Illuminate\Support\Facades\Auth;
-use Mortezamasumi\FbUser\Exports\UserExporter;
-use Mortezamasumi\FbUser\Imports\UserImporter;
+use Mortezamasumi\FbUser\Resources\Exports\UserExporter;
+use Mortezamasumi\FbUser\Resources\Imports\UserImporter;
 use Mortezamasumi\FbUser\Resources\UserResource;
 
 class ListUsers extends ListRecords

@@ -1,6 +1,6 @@
 <?php
 
-namespace Mortezamasumi\FbUser\Exports;
+namespace Mortezamasumi\FbUser\Resources\Exports;
 
 use Filament\Actions\Exports\Models\Export;
 use Filament\Actions\Exports\ExportColumn;
@@ -8,9 +8,12 @@ use Filament\Actions\Exports\Exporter;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Number;
 use Illuminate\Support\Str;
+use Mortezamasumi\FbEssentials\Traits\ExportCompletedNotificationBody;
 
 class UserExporter extends Exporter
 {
+    use ExportCompletedNotificationBody;
+
     public static function getColumns(): array
     {
         return [
@@ -40,26 +43,5 @@ class UserExporter extends Exporter
             ExportColumn::make('roles.name')
                 ->label(__('fb-user::fb-user.exporter.roles')),
         ];
-    }
-
-    public static function getCompletedNotificationBody(Export $export): string
-    {
-        if (App::getLocale() === 'fa') {
-            $body = 'برون برد انجام شد و '.Number::format(number: number_format($export->successful_rows), locale: App::getLocale()).' سطر ایجاد شد';
-
-            if ($failedRowsCount = $export->getFailedRowsCount()) {
-                $body .= 'و تعداد '
-                    .Number::format(number: number_format($failedRowsCount), locale: App::getLocale())
-                    .' سطر دارای خطا بود و ایجاد نشد';
-            }
-        } else {
-            $body = 'Export has completed and '.number_format($export->successful_rows).' '.Str::plural('row', $export->successful_rows).' exported.';
-
-            if ($failedRowsCount = $export->getFailedRowsCount()) {
-                $body .= ', '.number_format($failedRowsCount).' '.Str::plural('row', $failedRowsCount).' failed to export.';
-            }
-        }
-
-        return $body;
     }
 }

@@ -5,8 +5,6 @@ namespace Mortezamasumi\FbUser;
 use Filament\Support\Assets\Css;
 use Filament\Support\Facades\FilamentAsset;
 use Illuminate\Console\Scheduling\Schedule;
-use Illuminate\Support\Facades\Response;
-use Illuminate\Support\Facades\Route;
 use Livewire\Features\SupportTesting\Testable;
 use Mortezamasumi\FbEssentials\Facades\FbEssentials;
 use Mortezamasumi\FbUser\Jobs\RemoveUnAttendUsers;

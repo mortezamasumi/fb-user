@@ -1,6 +1,6 @@
 <?php
 
-namespace Mortezamasumi\FbUser\Imports;
+namespace Mortezamasumi\FbUser\Resources\Imports;
 
 use Ariaieboy\Jalali\CalendarUtils;
 use Carbon\Carbon;
@@ -13,12 +13,15 @@ use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
 use Mortezamasumi\FbAuth\Enums\AuthType;
+use Mortezamasumi\FbEssentials\Traits\ImportCompletedNotificationBody;
 use Mortezamasumi\FbProfile\Enums\GenderEnum;
 use Spatie\Permission\Models\Role;
 use Exception;
 
 class UserImporter extends Importer
 {
+    use ImportCompletedNotificationBody;
+
     public static function getDate($state): ?Carbon
     {
         try {
@@ -144,26 +147,6 @@ class UserImporter extends Importer
 
         Role::whereIn('name', $roles)
             ->each(fn ($role) => $role->users()->attach([$this->getRecord()->id]));
-    }
-
-    public static function getCompletedNotificationBody(Import $import): string
-    {
-        if (app()->getLocale() === 'fa') {
-            $body = 'بارگذاری انجام شد و '
-                .Number::format(number: number_format($import->successful_rows), locale: App::getLocale()).' سطر ایجاد شد';
-
-            if ($failedRowsCount = $import->getFailedRowsCount()) {
-                $body .= 'و تعداد '.Number::format(number: number_format($failedRowsCount), locale: App::getLocale()).' سطر دارای خطا بود و بارگذاری نشد';
-            }
-        } else {
-            $body = 'Import has completed and '.number_format($import->successful_rows).' '.str('row')->plural($import->successful_rows).' imported.';
-
-            if ($failedRowsCount = $import->getFailedRowsCount()) {
-                $body .= ', '.number_format($failedRowsCount).' '.str('row')->plural($failedRowsCount).' failed to import.';
-            }
-        }
-
-        return $body;
     }
 
     public static function getOptionsFormComponents(): array

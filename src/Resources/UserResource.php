@@ -2,7 +2,7 @@
 
 namespace Mortezamasumi\FbUser\Resources;
 
-use BezhanSalleh\FilamentShield\Contracts\HasShieldPermissions;
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -17,11 +17,16 @@ use Mortezamasumi\FbUser\Resources\Pages\EditUser;
 use Mortezamasumi\FbUser\Resources\Pages\ListUsers;
 use Mortezamasumi\FbUser\Resources\Schemas\UserForm;
 use Mortezamasumi\FbUser\Resources\Tables\UsersTable;
-use BackedEnum;
 use UnitEnum;
 
 class UserResource extends Resource
 {
+    public static function getModel(): string
+    {
+        /** @disregard */
+        return static::$model ?? Auth::getProvider()->getModel();
+    }
+
     public static function getModelLabel(): string
     {
         return __(config('fb-user.navigation.model_label'));

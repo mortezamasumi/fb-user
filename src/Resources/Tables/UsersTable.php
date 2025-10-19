@@ -40,10 +40,14 @@ class UsersTable
                     ->disk(config('fb-profile.avatar_disk'))
                     ->visibility(config('fb-profile.avatar_visibility'))
                     ->default(url('/fb-essentials-assets/avatar.png')),
-                TextColumn::make('reverse_name')
+                TextColumn::make('last_name')
                     ->label(__('fb-user::fb-user.table.name'))
+                    ->formatStateUsing(fn (Model $record) => $record->reverse_name)
                     ->sortable()
-                    ->searchable(),
+                    ->searchable(query: function (Builder $query, string $search): Builder {
+                        return $query
+                            ->whereAny(['first_name', 'last_name', 'profile'], 'like', "%{$search}%");
+                    }),
                 TextColumn::make('username')
                     ->label(__('fb-user::fb-user.table.username'))
                     ->searchable()

@@ -2,77 +2,72 @@
 
 namespace Mortezamasumi\FbUser\Tests;
 
-use BladeUI\Heroicons\BladeHeroiconsServiceProvider;
-use BladeUI\Icons\BladeIconsServiceProvider;
-use Filament\Actions\ActionsServiceProvider;
-use Filament\Forms\FormsServiceProvider;
-use Filament\Infolists\InfolistsServiceProvider;
-use Filament\Notifications\NotificationsServiceProvider;
-use Filament\Support\SupportServiceProvider;
-use Filament\Tables\TablesServiceProvider;
-use Filament\Widgets\WidgetsServiceProvider;
-use Filament\FilamentServiceProvider;
-use Illuminate\Database\Eloquent\Factories\Factory;
-use Livewire\LivewireServiceProvider;
-use Mortezamasumi\FbUser\Tests\Services\FbUserPanelProvider;
+use Filament\Facades\Filament;
+use Filament\Http\Middleware\Authenticate;
+use Filament\Panel;
+use Illuminate\Foundation\Testing\RefreshDatabase;
+use Mortezamasumi\FbAuth\FbAuthPlugin;
+use Mortezamasumi\FbAuth\FbAuthServiceProvider;
+use Mortezamasumi\FbEssentials\FbEssentialsPlugin;
+use Mortezamasumi\FbEssentials\FbEssentialsServiceProvider;
+use Mortezamasumi\FbProfile\FbProfilePlugin;
+use Mortezamasumi\FbProfile\FbProfileServiceProvider;
+use Mortezamasumi\FbUser\FbUserPlugin;
 use Mortezamasumi\FbUser\FbUserServiceProvider;
-use Orchestra\Testbench\TestCase as Orchestra;
-use RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider;
+use Orchestra\Testbench\TestCase as TestbenchTestCase;
+use Spatie\Permission\PermissionServiceProvider;
 
-use function Orchestra\Testbench\default_migration_path;
-
-class TestCase extends Orchestra
+class TestCase extends TestbenchTestCase
 {
-    protected function setUp(): void
-    {
-        parent::setUp();
-
-        // Factory::guessFactoryNamesUsing(
-        //     fn (string $modelName) => 'Mortezamasumi\\FbUser\\Database\\Factories\\'.class_basename($modelName).'Factory'
-        // );
-    }
+    use RefreshDatabase;
 
     protected function defineEnvironment($app)
     {
-        // config()->set('app.key', 'base64:Hupx3yAySikrM2/edkZQNQHslgDWYfiBfCuSThJ5SK8=');
-        // config()->set('database.default', 'testing');
-        // config()->set('queue.batching.database', 'testing');
-        // config()->set('auth.providers.users.model', '\Tests\Models\User');
-
-        /*
-         * $migration = include __DIR__.'/../database/migrations/create_page-test_table.php.stub';
-         * $migration->up();
-         */
-        // View::addLocation(__DIR__.'/resources/views');
-        // View::addLocation(__DIR__.'/../resources/views');
+        Filament::registerPanel(
+            Panel::make()
+                ->id('admin')
+                ->path('/')
+                ->login()
+                ->default()
+                ->plugins([
+                    FbEssentialsPlugin::make(),
+                    FbAuthPlugin::make(),
+                    FbProfilePlugin::make(),
+                    FbUserPlugin::make(),
+                ])
+                ->authMiddleware([
+                    Authenticate::class,
+                ])
+        );
     }
 
     protected function defineDatabaseMigrations()
     {
-        /** @var Orchestra $this */
-        $this->loadMigrationsFrom(default_migration_path());
-        $this->loadMigrationsFrom(default_migration_path().'/notifications');
-        // $this->loadMigrationsFrom(__DIR__.'/../database/migrations');
-        $this->loadMigrationsFrom(__DIR__.'/database/migrations');
+        $this->artisan('vendor:publish', ['--tag' => 'fb-user-migrations']);
     }
 
     protected function getPackageProviders($app)
     {
         return [
-            ActionsServiceProvider::class,
-            BladeCaptureDirectiveServiceProvider::class,
-            BladeHeroiconsServiceProvider::class,
-            BladeIconsServiceProvider::class,
-            FilamentServiceProvider::class,
-            FormsServiceProvider::class,
-            InfolistsServiceProvider::class,
-            LivewireServiceProvider::class,
-            NotificationsServiceProvider::class,
-            SupportServiceProvider::class,
-            TablesServiceProvider::class,
-            WidgetsServiceProvider::class,
+            \BladeUI\Heroicons\BladeHeroiconsServiceProvider::class,
+            \BladeUI\Icons\BladeIconsServiceProvider::class,
+            \Filament\FilamentServiceProvider::class,
+            \Filament\Actions\ActionsServiceProvider::class,
+            \Filament\Forms\FormsServiceProvider::class,
+            \Filament\Infolists\InfolistsServiceProvider::class,
+            \Filament\Notifications\NotificationsServiceProvider::class,
+            \Filament\Schemas\SchemasServiceProvider::class,
+            \Filament\Support\SupportServiceProvider::class,
+            \Filament\Tables\TablesServiceProvider::class,
+            \Filament\Widgets\WidgetsServiceProvider::class,
+            \Livewire\LivewireServiceProvider::class,
+            \RyanChandler\BladeCaptureDirective\BladeCaptureDirectiveServiceProvider::class,
+            \Orchestra\Workbench\WorkbenchServiceProvider::class,
+            PermissionServiceProvider::class,
+            FbEssentialsServiceProvider::class,
+            FbAuthServiceProvider::class,
+            FbProfileServiceProvider::class,
             FbUserServiceProvider::class,
-            // FbUserPanelProvider::class,
         ];
     }
 }
