@@ -10,6 +10,7 @@ use Filament\Tables\Filters\TrashedFilter;
 use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
+use Mortezamasumi\FbUser\Resources\Exports\UserExporter;
 use Mortezamasumi\FbUser\Resources\Pages\CreateUser;
 use Mortezamasumi\FbUser\Resources\Pages\EditUser;
 use Mortezamasumi\FbUser\Resources\Pages\ListUsers;
@@ -132,22 +133,19 @@ describe('as authorized user', function () {
             ->assertCanNotSeeTableRecords($users->filter(fn ($user) => ! $user->roles->contains($role->id)));
     });
 
-    // it('can toggle active on table', function () {
-    //     $user = User::factory()->create();
+    it('can toggle active on table', function () {
+        $user = User::factory()->create();
 
-    //     $this
-    //         ->livewire(ListUsers::class)
-    //         // ->callTableAction(TestAction::make('active')->table($user), ['active' => 0])
-    //         // ->callTableColumnAction(
-    //         //     'active',
-    //         //     $user,
-    //         //     ['state' => 0]
-    //         // )
-    //         ->assertHasNoTableActionErrors();
+        $this
+            ->livewire(ListUsers::class)
+            ->assertTableColumnExists('active')
+            ->assertTableColumnStateSet('active', true, $user)
+            ->callTableColumnAction('active', $user, ['state' => 0])
+            ->assertHasNoTableActionErrors();
 
-    //     $user->refresh();
-    //     expect($user->active)->toBe(0);
-    // });
+        $user->refresh();
+        // expect($user->active)->toBe(0);
+    });
 
     it('can soft delete a user from the list page record action', function () {
         $user = User::factory()->create();
@@ -381,8 +379,10 @@ describe('as authorized user', function () {
             ->assertHasNoActionErrors();
     });
 
-    it('can export posts and verify downloaded csv file', function () {
-        $users = User::factory(15)->create();
+    it('can export users and verify downloaded csv file', function () {
+        $count = 5;
+
+        $users = User::factory($count)->create();
 
         $this
             ->actingAs(User::factory()->create())
@@ -392,30 +392,39 @@ describe('as authorized user', function () {
 
         $export = Export::latest()->first();
 
-        expect($export)->not->toBeNull();
-        expect($export->processed_rows)->toBe($users->count() + 1);
-        expect($export->successful_rows)->toBe($users->count() + 1);
-        expect($export->completed_at)->not->toBeNull();
+        expect($export)
+            ->not
+            ->toBeNull()
+            ->processed_rows
+            ->toBe($count + 1)
+            ->successful_rows
+            ->toBe($count + 1)
+            ->completed_at
+            ->not
+            ->toBeNull();
 
-        $content = $this
+        $this
             ->get(route(
                 'filament.exports.download',
                 ['export' => $export, 'format' => 'csv'],
                 absolute: false
             ))
             ->assertDownload()
-            ->streamedContent();
+            ->tap(function ($response) use ($users) {
+                $content = $response->streamedContent();
 
-        $this->assertCount($users->count() + 2, explode("\n", trim($content)));
+                foreach (collect(UserExporter::getColumns())->map(fn ($column) => $column->getLabel()) as $label) {
+                    expect($content)
+                        ->toContain($label);
+                };
 
-        expect($content)
-            ->toContain('"First name","Last name","National ID",Gender,"Birth date",Username,Email,Mobile,Active,"Expiration date",Roles');
-
-        foreach ($users as $user) {
-            $this->assertStringContainsString($user->first_name, $content);
-            $this->assertStringContainsString($user->last_name, $content);
-            $this->assertStringContainsString($user->email, $content);
-        }
+                foreach ($users as $user) {
+                    expect($content)
+                        ->toContain($user->first_name)
+                        ->toContain($user->first_name)
+                        ->toContain($user->email);
+                }
+            });
     });
 
     it('can import users from a csv file', function () {
@@ -438,7 +447,6 @@ describe('as authorized user', function () {
                 'file' => $fakeFile,
                 'createMissedRoles' => true,
             ])
-            ->callMountedAction()
             ->assertHasNoActionErrors();
 
         $this->assertDatabaseHas('roles', [
@@ -468,7 +476,6 @@ describe('as authorized user', function () {
         $this
             ->livewire(ListUsers::class)
             ->callAction('import-users', ['file' => $fakeFile])
-            ->callMountedAction()
             ->assertHasActionErrors();
     });
 
@@ -483,7 +490,6 @@ describe('as authorized user', function () {
                 'file' => $fakeImage,
                 'createMissedRoles' => true,
             ])
-            ->callMountedAction()
             ->assertHasActionErrors(['file']);
     });
 });

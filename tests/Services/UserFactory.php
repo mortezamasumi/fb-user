@@ -13,6 +13,7 @@ class UserFactory extends Factory
             'first_name' => fake('fa')->firstName(),
             'last_name' => fake()->lastName(),
             'email' => fake()->unique()->safeEmail(),
+            'active' => true,
             'password' => Hash::make('password'),
         ];
     }
