@@ -2,7 +2,6 @@
 
 namespace Mortezamasumi\FbUser\Resources;
 
-use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
@@ -17,6 +16,7 @@ use Mortezamasumi\FbUser\Resources\Pages\EditUser;
 use Mortezamasumi\FbUser\Resources\Pages\ListUsers;
 use Mortezamasumi\FbUser\Resources\Schemas\UserForm;
 use Mortezamasumi\FbUser\Resources\Tables\UsersTable;
+use BackedEnum;
 use UnitEnum;
 
 class UserResource extends Resource
@@ -65,7 +65,7 @@ class UserResource extends Resource
                     ! Auth::user()->hasRole('super_admin'),
                     fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
                 )
-                    ->where('active', true)
+                    ->when(config('fb-user.defaul_users_list_filter') === 'active', fn (Builder $query) => $query->where('active', true))
                     ->count(),
                 locale: App::getLocale()
             )
