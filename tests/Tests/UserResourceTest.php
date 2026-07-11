@@ -20,14 +20,12 @@ use Spatie\Permission\Models\Role;
 
 describe('as guest/un-authorized user', function () {
     beforeEach(function () {
-        /** @var Pest $this */
-        $this->user = User::factory()
+        data_set($this, 'user', User::factory()
             ->create()
-            ->assignRole(Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']));
+            ->assignRole(Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web'])));
     });
 
     it('guests cannot access the resource', function () {
-        /** @var Pest $this */
         $this
             ->get(UserResource::getUrl('index'))
             ->assertRedirect(config('filament.auth.pages.login'));
@@ -42,7 +40,6 @@ describe('as guest/un-authorized user', function () {
     });
 
     it('un-authorized users cannot access the resource', function () {
-        /** @var Pest $this */
         $this->actingAs($this->user);
 
         $this
@@ -61,10 +58,9 @@ describe('as guest/un-authorized user', function () {
 
 describe('as authorized user', function () {
     beforeEach(function () {
-        /** @var Pest $this */
-        $role = Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web']);
-
-        $this->adminUser = User::factory()->create()->assignRole($role);
+        data_set($this, 'adminUser', User::factory()
+            ->create()
+            ->assignRole(Role::firstOrCreate(['name' => 'super_admin', 'guard_name' => 'web'])));
 
         $this->actingAs($this->adminUser);
 
@@ -72,7 +68,6 @@ describe('as authorized user', function () {
     });
 
     it('can render the list page', function () {
-        /** @var Pest $this */
         $this
             ->get(UserResource::getUrl('index'))
             ->assertSuccessful();
@@ -81,7 +76,6 @@ describe('as authorized user', function () {
     it('can list users', function () {
         $users = User::factory(3)->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->assertSuccessful()
@@ -91,7 +85,6 @@ describe('as authorized user', function () {
     it('can search users by `name` or `email`', function () {
         $users = User::factory()->count(5)->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->assertCanSeeTableRecords($users)
@@ -106,7 +99,6 @@ describe('as authorized user', function () {
     it('can sort users by `last_name`', function () {
         User::factory()->count(3)->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->sortTable('last_name')
@@ -129,7 +121,6 @@ describe('as authorized user', function () {
 
         $users = User::all();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->assertCanSeeTableRecords($users)
@@ -145,7 +136,6 @@ describe('as authorized user', function () {
     it('can toggle active on table', function () {
         $user = User::factory()->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->assertTableColumnExists('active')
@@ -160,7 +150,6 @@ describe('as authorized user', function () {
     it('can soft delete a user from the list page record action', function () {
         $user = User::factory()->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->callAction(TestAction::make(DeleteAction::class)->table($user))
@@ -172,7 +161,6 @@ describe('as authorized user', function () {
     it('can restore a user from the list page record action', function () {
         $user = User::factory()->create(['deleted_at' => now()]);
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->filterTable(TrashedFilter::class, true)
@@ -185,7 +173,6 @@ describe('as authorized user', function () {
     it('can force delete a user from the list page record action', function () {
         $user = User::factory()->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->callAction(TestAction::make(DeleteAction::class)->table($user))
@@ -199,7 +186,6 @@ describe('as authorized user', function () {
     it('can bulk delete users from the list page', function () {
         $usersToDelete = User::factory(3)->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->assertCanSeeTableRecords($usersToDelete)
@@ -216,7 +202,6 @@ describe('as authorized user', function () {
     it('can bulk activ/deactive users from the list page', function () {
         $users = User::factory(3)->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->assertCanSeeTableRecords($users)
@@ -232,7 +217,6 @@ describe('as authorized user', function () {
     });
 
     it('can render the create page', function () {
-        /** @var Pest $this */
         $this
             ->get(UserResource::getUrl('create'))
             ->assertSuccessful();
@@ -242,16 +226,15 @@ describe('as authorized user', function () {
         $role = Role::firstOrCreate(['name' => 'test', 'guard_name' => 'web']);
 
         $newUserData = [
-            'first_name' => 'Test',
-            'last_name' => 'User',
-            'email' => 'test@example.com',
-            'password' => 'password123',
+            'first_name'            => 'Test',
+            'last_name'             => 'User',
+            'email'                 => 'test@example.com',
+            'password'              => 'password123',
             'password_confirmation' => 'password123',
-            'roles' => [$role->id],
-            'profile.some_data' => 'test',
+            'roles'                 => [$role->id],
+            'profile.some_data'     => 'test',
         ];
 
-        /** @var Pest $this */
         $this
             ->livewire(CreateUser::class)
             ->fillForm($newUserData)
@@ -261,8 +244,8 @@ describe('as authorized user', function () {
 
         $this->assertDatabaseHas('users', [
             'first_name' => 'Test',
-            'last_name' => 'User',
-            'email' => 'test@example.com',
+            'last_name'  => 'User',
+            'email'      => 'test@example.com',
         ]);
 
         $user = User::whereEmail('test@example.com')->first();
@@ -270,30 +253,29 @@ describe('as authorized user', function () {
         $this->assertEquals('test', $user->profile['some_data']);
 
         $this->assertDatabaseHas('model_has_roles', [
-            'role_id' => $role->id,
+            'role_id'    => $role->id,
             'model_type' => User::class,
-            'model_id' => User::whereEmail('test@example.com')->first()->id,
+            'model_id'   => User::whereEmail('test@example.com')->first()->id,
         ]);
     });
 
     it('cannot create a user with invalid data (validation)', function () {
-        /** @var Pest $this */
         $this
             ->livewire(CreateUser::class)
             ->fillForm([
                 'first_name' => '',
-                'email' => '',
-                'password' => '',
+                'email'      => '',
+                'password'   => '',
             ])
             ->call('create')
             ->assertHasFormErrors([
                 'first_name' => 'required',
-                'email' => 'required',
-                'password' => 'required',
-                'roles' => 'required',
+                'email'      => 'required',
+                'password'   => 'required',
+                'roles'      => 'required',
             ])
             ->fillForm([
-                'password' => 'password123',
+                'password'              => 'password123',
                 'password_confirmation' => 'mismatch',
             ])
             ->call('create')
@@ -303,7 +285,6 @@ describe('as authorized user', function () {
     it('can render the edit page', function () {
         $user = User::factory()->create();
 
-        /** @var Pest $this */
         $this
             ->get(UserResource::getUrl('edit', ['record' => $user]))
             ->assertSuccessful();
@@ -312,15 +293,14 @@ describe('as authorized user', function () {
     it('can load existing data into the edit form', function () {
         $user = User::factory()->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(EditUser::class, [
                 'record' => $user->getRouteKey(),
             ])
             ->assertSchemaStateSet([
                 'first_name' => $user->first_name,
-                'last_name' => $user->last_name,
-                'email' => $user->email,
+                'last_name'  => $user->last_name,
+                'email'      => $user->email,
             ]);
     });
 
@@ -329,16 +309,15 @@ describe('as authorized user', function () {
 
         $user = User::factory()->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(EditUser::class, [
                 'record' => $user->getRouteKey(),
             ])
             ->fillForm([
-                'first_name' => 'Updated Name',
-                'last_name' => 'Updated Last',
-                'email' => 'updated@example.com',
-                'roles' => [$role->id],
+                'first_name'        => 'Updated Name',
+                'last_name'         => 'Updated Last',
+                'email'             => 'updated@example.com',
+                'roles'             => [$role->id],
                 'profile.some_data' => 'test',
             ])
             ->call('save')
@@ -346,29 +325,28 @@ describe('as authorized user', function () {
             ->assertNotified();
 
         $this->assertDatabaseHas('users', [
-            'id' => $user->id,
+            'id'         => $user->id,
             'first_name' => 'Updated Name',
-            'email' => 'updated@example.com',
+            'email'      => 'updated@example.com',
         ]);
     });
 
     it('does not update password when password fields are empty', function () {
         $role = Role::firstOrCreate(['name' => 'test', 'guard_name' => 'web']);
 
-        $user = User::factory()->create();
+        $user             = User::factory()->create();
         $originalPassword = $user->password;
 
-        /** @var Pest $this */
         $this
             ->livewire(EditUser::class, [
                 'record' => $user->getRouteKey(),
             ])
             ->fillForm([
-                'first_name' => 'Updated Name',
-                'password' => '',
+                'first_name'            => 'Updated Name',
+                'password'              => '',
                 'password_confirmation' => '',
-                'roles' => [$role->id],
-                'profile.some_data' => 'test',
+                'roles'                 => [$role->id],
+                'profile.some_data'     => 'test',
             ])
             ->call('save')
             ->assertHasNoFormErrors();
@@ -382,7 +360,6 @@ describe('as authorized user', function () {
     it('can delete a user from the edit page', function () {
         $user = User::factory()->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(EditUser::class, [
                 'record' => $user->getRouteKey(),
@@ -394,63 +371,13 @@ describe('as authorized user', function () {
     });
 
     it('can export users', function () {
-        $users = User::factory(3)->create();
+        User::factory(3)->create();
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->callAction('export-users')
             ->assertHasNoActionErrors();
-    })->skip();
-
-    it('can export users and verify downloaded csv file', function () {
-        $count = 5;
-
-        $users = User::factory($count)->create();
-
-        /** @var Pest $this */
-        $this
-            ->actingAs(User::factory()->create())
-            ->livewire(ListUsers::class)
-            ->callAction('export-users')
-            ->assertNotified();
-
-        $export = Export::latest()->first();
-
-        expect($export)
-            ->not
-            ->toBeNull()
-            ->processed_rows
-            ->toBe($count + 1)
-            ->successful_rows
-            ->toBe($count + 1)
-            ->completed_at
-            ->not
-            ->toBeNull();
-
-        $this
-            ->get(route(
-                'filament.exports.download',
-                ['export' => $export, 'format' => 'csv'],
-                absolute: false
-            ))
-            ->assertDownload()
-            ->tap(function ($response) use ($users) {
-                $content = $response->streamedContent();
-
-                foreach (collect(UserExporter::getColumns())->map(fn($column) => $column->getLabel()) as $label) {
-                    expect($content)
-                        ->toContain($label);
-                };
-
-                foreach ($users as $user) {
-                    expect($content)
-                        ->toContain($user->first_name)
-                        ->toContain($user->first_name)
-                        ->toContain($user->email);
-                }
-            });
-    })->skip();
+    });
 
     it('can import users from a csv file', function () {
         Storage::fake('public');
@@ -466,30 +393,29 @@ describe('as authorized user', function () {
             $csvContent
         );
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->callAction('import-users', [
-                'file' => $fakeFile,
+                'file'              => $fakeFile,
                 'createMissedRoles' => true,
             ])
             ->assertHasNoActionErrors();
 
         $this->assertDatabaseHas('roles', [
-            'name' => 'testRole',
+            'name'       => 'testRole',
             'guard_name' => 'web',
         ]);
 
         $this->assertDatabaseHas('users', [
             'first_name' => 'Test',
-            'email' => 'test@example.com',
+            'email'      => 'test@example.com',
         ]);
 
         $this->assertDatabaseHas('users', [
             'first_name' => 'Another',
-            'email' => 'another@example.com',
+            'email'      => 'another@example.com',
         ]);
-    })->skip();
+    });
 
     it('validate missing roles in import file', function () {
         Storage::fake('public');
@@ -499,7 +425,6 @@ describe('as authorized user', function () {
             'a-title'
         );
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->callAction('import-users', ['file' => $fakeFile])
@@ -511,13 +436,61 @@ describe('as authorized user', function () {
 
         $fakeImage = UploadedFile::fake()->image('not-a-csv.jpg');
 
-        /** @var Pest $this */
         $this
             ->livewire(ListUsers::class)
             ->callAction('import-users', [
-                'file' => $fakeImage,
+                'file'              => $fakeImage,
                 'createMissedRoles' => true,
             ])
             ->assertHasActionErrors(['file']);
     });
+
+    it('can export users and verify downloaded csv file', function () {
+    $count = 5;
+    $users = User::factory($count)->create();
+
+    $this
+        ->livewire(ListUsers::class)
+        ->callAction('export-users');
+
+    $export = Export::latest()->first();
+
+    expect($export)
+        ->not
+        ->toBeNull()
+        ->processed_rows
+        ->toBe($count)
+        ->successful_rows
+        ->toBe($count)
+        ->completed_at
+        ->not
+        ->toBeNull();
+
+    $this->actingAs($this->adminUser);
+
+    $this
+        ->get(route(
+            'filament.exports.download',
+            ['export' => $export, 'format' => 'csv'],
+            absolute: false
+        ))
+        ->assertDownload()
+        ->tap(function ($response) use ($users) {
+            $content = $response->streamedContent();
+
+            foreach (collect(UserExporter::getColumns())->map(fn($column) => $column->getLabel()) as $label) {
+                expect($content)
+                    ->toContain($label);
+            };
+
+            foreach ($users as $user) {
+                expect($content)
+                    ->toContain($user->first_name)
+                    ->toContain($user->last_name)
+                    ->toContain($user->email);
+            }
+        });
 });
+
+});
+

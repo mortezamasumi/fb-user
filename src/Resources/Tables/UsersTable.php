@@ -43,7 +43,7 @@ class UsersTable
             ->modifyQueryUsing(fn ($query) => $query
                 ->withTrashed()
                 ->unless(
-                    Auth::user()->hasRole('super_admin'),
+                    Auth::user()?->hasRole('super_admin'),
                     fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
                 ))
             ->columns([
@@ -112,7 +112,7 @@ class UsersTable
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query) => $query
                             ->when(
-                                ! Auth::user()->hasRole('super_admin'),
+                                ! Auth::user()?->hasRole('super_admin'),
                                 fn (Builder $query) => $query->where('name', '<>', 'super_admin')
                             )
                     )

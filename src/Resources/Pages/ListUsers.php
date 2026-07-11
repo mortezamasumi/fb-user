@@ -22,13 +22,13 @@ class ListUsers extends ListRecords
                 ->label(__('fb-user::fb-user.exporter.exporter_label'))
                 ->modalHeading(__('fb-user::fb-user.exporter.exporter_heading'))
                 ->exporter(UserExporter::class)
-                ->modifyQueryUsing(fn ($query) => $query->role(roles: ['super_admin'], without: true))
-                ->visible(fn () => Auth::user()->can('Export:User')),
+                ->modifyQueryUsing(fn($query) => $query->role(roles: ['super_admin'], without: true))
+                ->visible(fn() => Auth::user()?->can('Export:User')),
             ImportAction::make('import-users')
                 ->label(__('fb-user::fb-user.importer.importer_label'))
                 ->modalHeading(__('fb-user::fb-user.importer.importer_heading'))
                 ->importer(UserImporter::class)
-                ->visible(Auth::user()->can('Create:User')),
+                ->visible(fn() => Auth::user()?->can('Create:User')),
             CreateAction::make(),
         ];
     }
