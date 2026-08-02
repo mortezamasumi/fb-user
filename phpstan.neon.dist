@@ -16,16 +16,6 @@ parameters:
         # PHPStan cannot resolve them statically.
         - message: '#(jDate|jDateTime|localeDigit|toEN)\(\)#'
           path: src
-        # The no-role-widget view lives in the package's own view namespace,
-        # which PHPStan cannot resolve into a real path for the view-string
-        # check on the Widget::$view default.
-        - identifier: property.defaultValue
-          path: src/Widgets/NoRoleWidget.php
-        # HasCascadeOperation is consumed by app models (e.g. Student, Nurse)
-        # that do not use spatie/laravel-permission; the method_exists guard
-        # is a real runtime check, even though User (in src) always has hasRole.
-        - identifier: function.alreadyNarrowedType
-          path: src/Traits/HasCascadeOperation.php
         # Traits are shipped for consumers to use; they are intentionally not
         # used in src/.
         - identifier: trait.unused

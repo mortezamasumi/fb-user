@@ -54,6 +54,7 @@ abstract class User extends Authenticatable implements FilamentUser, HasAvatar, 
 
     /** @use HasFactory<Factory<User>> */
     use HasFactory;
+
     use HasRoles;
     use Notifiable;
     use SoftDeletes;

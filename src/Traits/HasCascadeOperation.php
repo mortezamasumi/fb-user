@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use Spatie\Permission\Models\Role;
+use Spatie\Permission\Traits\HasRoles;
 
 trait HasCascadeOperation
 {
@@ -60,7 +61,7 @@ trait HasCascadeOperation
             Role::findByName($role);
 
             // $this is HasRole model (like User)
-            if (method_exists($this, 'hasRole')) {
+            if (in_array(HasRoles::class, class_uses_recursive($this), true)) {
                 $relations = $this->$relation()->withTrashed();
 
                 if ($relations->exists()) {
