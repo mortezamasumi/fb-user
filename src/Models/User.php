@@ -10,25 +10,53 @@ use Filament\Resources\Pages\CreateRecord;
 use Filament\Resources\Pages\EditRecord;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Casts\Attribute;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Carbon;
 use Mortezamasumi\FbAuth\Enums\AuthType;
 use Mortezamasumi\FbProfile\Enums\GenderEnum;
 use Mortezamasumi\FbUser\Traits\HasCascadeOperation;
 use Spatie\Permission\Traits\HasRoles;
 
-abstract class User extends Authenticatable implements
-    FilamentUser,
-    HasAvatar,
-    HasName
+/**
+ * @property int|string|null $id
+ * @property string|null $email
+ * @property Carbon|null $email_verified_at
+ * @property string|null $username
+ * @property string|null $password
+ * @property string|null $first_name
+ * @property string|null $last_name
+ * @property string|null $nid
+ * @property GenderEnum|null $gender
+ * @property Carbon|null $birth_date
+ * @property array<mixed>|null $profile
+ * @property string|null $mobile
+ * @property array<mixed>|null $demography
+ * @property array<mixed>|null $mars
+ * @property Carbon|null $expiration_date
+ * @property bool $active
+ * @property bool $force_change_password
+ * @property string|null $theme
+ * @property string|null $theme_color
+ * @property string|null $avatar
+ * @property string $name
+ * @property string $reverse_name
+ * @property Carbon|null $created_at
+ * @property Carbon|null $updated_at
+ * @property Carbon|null $deleted_at
+ */
+abstract class User extends Authenticatable implements FilamentUser, HasAvatar, HasName
 {
+    use HasCascadeOperation;
+
+    /** @use HasFactory<Factory<User>> */
     use HasFactory;
     use HasRoles;
-    use SoftDeletes;
     use Notifiable;
-    use HasCascadeOperation;
+    use SoftDeletes;
 
     protected $fillable = [
         'mobile',
@@ -75,6 +103,9 @@ abstract class User extends Authenticatable implements
         });
     }
 
+    /**
+     * @return Attribute<string, never>
+     */
     protected function name(): Attribute
     {
         return Attribute::make(
@@ -82,6 +113,9 @@ abstract class User extends Authenticatable implements
         );
     }
 
+    /**
+     * @return Attribute<string, never>
+     */
     protected function reverseName(): Attribute
     {
         return Attribute::make(
@@ -106,7 +140,7 @@ abstract class User extends Authenticatable implements
 
     public function getEmailForPasswordReset()
     {
-        return match (config('fb-auth.auth_type')) {
+        return (string) match (config('fb-auth.auth_type')) {
             AuthType::Mobile => $this->mobile,
             AuthType::User => $this->username,
             default => $this->email,
@@ -116,9 +150,8 @@ abstract class User extends Authenticatable implements
     /**
      * Scope a query to search for a user's full name.
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $search
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeWhereFullName(Builder $query, string $search): Builder
     {
@@ -134,19 +167,23 @@ abstract class User extends Authenticatable implements
     /**
      * Scope a query to order by a user's full name (last name, then first name).
      *
-     * @param \Illuminate\Database\Eloquent\Builder $query
-     * @param string $direction
-     * @return \Illuminate\Database\Eloquent\Builder
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeOrderByFullName(Builder $query, string $direction = 'asc'): Builder
     {
-        return $query
+        $query
             ->orderBy('users.last_name', $direction)
             ->orderBy('users.first_name', $direction);
+
+        return $query;
     }
 
     /**
      * required for messaging, can override by app User model
+     *
+     * @param  Builder<static>  $query
+     * @return Builder<static>
      */
     public function scopeMessageTo(Builder $query): Builder
     {
@@ -155,6 +192,8 @@ abstract class User extends Authenticatable implements
 
     /**
      * extra elements to user create/edit form, roles has live reaction
+     *
+     * @return array<int, mixed>
      */
     public static function extraFormSection(): array
     {

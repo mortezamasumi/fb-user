@@ -9,18 +9,26 @@ use Filament\Forms\Components\TextInput;
 use Filament\Schemas\Components\Flex;
 use Filament\Schemas\Components\Grid;
 use Filament\Schemas\Schema;
+use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\Auth;
 use Mortezamasumi\FbProfile\Schemas\ProfileForm;
-use Mortezamasumi\FbUser\Resources\UserResource;
+use Mortezamasumi\FbUser\Models\User;
 
 class UserForm
 {
     public static function configure(Schema $schema): Schema
     {
-        /** @disregard */
-        $userClass = Auth::getProvider()->getModel();
+        $provider = Auth::getProvider();
+
+        if (! $provider instanceof EloquentUserProvider) {
+            return $schema->columns(1);
+        }
+
+        /** @var class-string<User> $userClass */
+        $userClass = $provider->getModel();
+        /** @var User|null $user */
+        $user = Auth::user();
 
         if (method_exists($userClass, 'customUserForm')) {
             return $schema
@@ -38,22 +46,28 @@ class UserForm
                         ->schema([
                             Checkbox::make('active')
                                 ->label(__('fb-user::fb-user.form.active'))
-                                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
+                                ->disabled(fn (?User $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
                             Checkbox::make('force_change_password')
                                 ->label(__('fb-user::fb-user.form.force_change_password'))
-                                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin') && ! Auth::user()->can('ForceChangePassword:User')),
+                                ->disabled(fn (?User $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin') && ! $user?->can('ForceChangePassword:User')),
                         ])
-                        ->grow(false)
+                        ->grow(false),
                 ])
                     ->from('md')
                     ->columns(5),
-                Grid::make(1)->schema(UserResource::getModel()::extraFormSection()),
+                Grid::make(1)->schema($userClass::extraFormSection()),
             ])
             ->columns(1);
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public static function accountComponents(): array
     {
+        /** @var User|null $user */
+        $user = Auth::user();
+
         return [
             Select::make('roles')
                 ->label(__('fb-user::fb-user.form.roles'))
@@ -66,19 +80,22 @@ class UserForm
                     titleAttribute: 'name',
                     modifyQueryUsing: fn (Builder $query) => $query
                         ->unless(
-                            Auth::user()->hasRole('super_admin'),
+                            $user?->hasRole('super_admin'),
                             fn (Builder $query) => $query->where('name', '<>', 'super_admin')
                         )
                 )
-                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
+                ->disabled(fn (?User $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
             DateTimePicker::make('expiration_date')
                 ->label(__('fb-user::fb-user.form.expiration_date'))
                 ->jDateTime()
                 ->seconds(false)
-                ->disabled(fn (?Model $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
+                ->disabled(fn (?User $record, $operation) => $operation === 'edit' && $record?->hasRole('super_admin')),
         ];
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public static function passwordComponents(): array
     {
         return [

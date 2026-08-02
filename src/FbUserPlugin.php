@@ -3,7 +3,6 @@
 namespace Mortezamasumi\FbUser;
 
 use Filament\Contracts\Plugin;
-use Filament\Schemas\Components\Form;
 use Filament\Panel;
 use Mortezamasumi\FbUser\Resources\UserResource;
 use Mortezamasumi\FbUser\Widgets\NoRoleWidget;

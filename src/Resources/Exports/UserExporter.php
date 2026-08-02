@@ -2,12 +2,8 @@
 
 namespace Mortezamasumi\FbUser\Resources\Exports;
 
-use Filament\Actions\Exports\Models\Export;
 use Filament\Actions\Exports\ExportColumn;
 use Filament\Actions\Exports\Exporter;
-use Illuminate\Support\Facades\App;
-use Illuminate\Support\Number;
-use Illuminate\Support\Str;
 use Mortezamasumi\FbEssentials\Traits\ExportCompletedNotificationBody;
 
 class UserExporter extends Exporter

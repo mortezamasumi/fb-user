@@ -3,83 +3,84 @@
 namespace Mortezamasumi\FbUser\Policies;
 
 use Illuminate\Auth\Access\HandlesAuthorization;
+use Illuminate\Foundation\Auth\User as AuthUser;
 
 class UserPolicy
 {
     use HandlesAuthorization;
 
-    public function viewAny($user): bool
+    public function viewAny(AuthUser $authUser): bool
     {
-        return $user->can('view_any_user');
+        return $authUser->can('view_any_user');
     }
 
-    public function view($user): bool
+    public function view(AuthUser $authUser): bool
     {
-        return $user->can('view_user');
+        return $authUser->can('view_user');
     }
 
-    public function create($user): bool
+    public function create(AuthUser $authUser): bool
     {
-        return $user->can('create_user');
+        return $authUser->can('create_user');
     }
 
-    public function update($user): bool
+    public function update(AuthUser $authUser): bool
     {
-        return $user->can('update_user');
+        return $authUser->can('update_user');
     }
 
-    public function delete($user): bool
+    public function delete(AuthUser $authUser): bool
     {
-        return $user->can('delete_user');
+        return $authUser->can('delete_user');
     }
 
-    public function deleteAny($user): bool
+    public function deleteAny(AuthUser $authUser): bool
     {
-        return $user->can('delete_any_user');
+        return $authUser->can('delete_any_user');
     }
 
-    public function forceDelete($user): bool
+    public function forceDelete(AuthUser $authUser): bool
     {
-        return $user->can('force_delete_user');
+        return $authUser->can('force_delete_user');
     }
 
-    public function forceDeleteAny($user): bool
+    public function forceDeleteAny(AuthUser $authUser): bool
     {
-        return $user->can('force_delete_any_user');
+        return $authUser->can('force_delete_any_user');
     }
 
-    public function restore($user): bool
+    public function restore(AuthUser $authUser): bool
     {
-        return $user->can('restore_user');
+        return $authUser->can('restore_user');
     }
 
-    public function restoreAny($user): bool
+    public function restoreAny(AuthUser $authUser): bool
     {
-        return $user->can('restore_any_user');
+        return $authUser->can('restore_any_user');
     }
 
-    public function replicate($user): bool
+    public function replicate(AuthUser $authUser): bool
     {
-        return $user->can('replicate_user');
+        return $authUser->can('replicate_user');
     }
 
-    public function reorder($user): bool
+    public function reorder(AuthUser $authUser): bool
     {
-        return $user->can('reorder_user');
+        return $authUser->can('reorder_user');
     }
 
-    public function export($user): bool
+    public function export(AuthUser $authUser): bool
     {
-        return $user->can('export_user');
+        return $authUser->can('export_user');
     }
 
-    public function createRoleOnImport($user): bool
+    public function createRoleOnImport(AuthUser $authUser): bool
     {
-        return $user->can('create_role_on_import_user');
+        return $authUser->can('create_role_on_import_user');
     }
 
-    public function forceChangePassword($user): bool
+    public function forceChangePassword(AuthUser $authUser): bool
     {
-        return $user->can('force_change_password_user');
+        return $authUser->can('force_change_password_user');
     }
 }

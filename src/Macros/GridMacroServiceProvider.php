@@ -2,13 +2,13 @@
 
 namespace Mortezamasumi\FbUser\Macros;
 
-use Filament\Schemas\Components\Utilities\Get;
+use Closure;
 use Filament\Schemas\Components\Grid;
+use Filament\Schemas\Components\Utilities\Get;
 use Filament\Tables\Columns\Column;
 use Filament\Tables\Columns\TextColumn;
 use Illuminate\Support\ServiceProvider;
 use Spatie\Permission\Models\Role;
-use Closure;
 
 /**
  * Interface declaring Table macros for IDE support
@@ -21,12 +21,12 @@ interface GridMacrosInterface {}
 
 class GridMacroServiceProvider extends ServiceProvider
 {
-    public function boot()
+    public function boot(): void
     {
         Grid::macro('hasRole', function (string $role, string $roleAttributeName = 'roles'): Grid {
             /** @var Grid $this */
             $this->visible(
-                fn (Get $get) => in_array(Role::findByName($role)?->id, $get($roleAttributeName))
+                fn (Get $get) => in_array(Role::findByName($role)->id, $get($roleAttributeName))
             );
 
             return $this;

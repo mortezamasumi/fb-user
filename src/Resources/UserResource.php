@@ -2,29 +2,36 @@
 
 namespace Mortezamasumi\FbUser\Resources;
 
+use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;
 use Filament\Tables\Table;
+use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Contracts\Support\Htmlable;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Number;
+use Mortezamasumi\FbUser\Models\User;
 use Mortezamasumi\FbUser\Resources\Pages\CreateUser;
 use Mortezamasumi\FbUser\Resources\Pages\EditUser;
 use Mortezamasumi\FbUser\Resources\Pages\ListUsers;
 use Mortezamasumi\FbUser\Resources\Schemas\UserForm;
 use Mortezamasumi\FbUser\Resources\Tables\UsersTable;
-use BackedEnum;
 use UnitEnum;
 
 class UserResource extends Resource
 {
     public static function getModel(): string
     {
-        /** @disregard */
-        return static::$model ?? Auth::getProvider()->getModel();
+        $provider = Auth::getProvider();
+
+        if ($provider instanceof EloquentUserProvider) {
+            return $provider->getModel();
+        }
+
+        return User::class;
     }
 
     public static function getModelLabel(): string
@@ -59,17 +66,34 @@ class UserResource extends Resource
 
     public static function getNavigationBadge(): ?string
     {
-        return config('fb-user.navigation.badge')
-            ? Number::format(
-                number: static::getModel()::when(
-                    ! Auth::user()->hasRole('super_admin'),
-                    fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
-                )
-                    ->when(config('fb-user.defaul_users_list_filter') === 'active', fn (Builder $query) => $query->where('active', true))
-                    ->count(),
-                locale: App::getLocale()
+        if (! config('fb-user.navigation.badge')) {
+            return null;
+        }
+
+        $provider = Auth::getProvider();
+        /** @var User|null $user */
+        $user = Auth::user();
+
+        if ($provider instanceof EloquentUserProvider) {
+            /** @var class-string<User> $model */
+            $model = $provider->getModel();
+        } else {
+            $model = User::class;
+        }
+
+        $query = $model::query()
+            ->when(
+                ! $user?->hasRole('super_admin'),
+                fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
             )
-            : null;
+            ->when(
+                config('fb-user.default_users_list_filter') === 'active',
+                fn (Builder $query) => $query->where('active', true)
+            );
+
+        $count = $query->count();
+
+        return (string) Number::format($count, locale: App::getLocale());
     }
 
     public static function getNavigationBadgeTooltip(): ?string
@@ -84,7 +108,8 @@ class UserResource extends Resource
 
     public static function getGlobalSearchResultTitle(Model $record): string
     {
-        return $record->reverseName;
+        /** @var User $record */
+        return $record->reverse_name;
     }
 
     public static function getGloballySearchableAttributes(): array

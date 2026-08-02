@@ -18,15 +18,17 @@ use Filament\Tables\Filters\TernaryFilter;
 use Filament\Tables\Filters\TrashedFilter;
 use Filament\Tables\Table;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
+use Mortezamasumi\FbUser\Models\User;
 
 class UsersTable
 {
     public static function configure(Table $table): Table
     {
-        $activeUsers = config('fb-user.defaul_users_list_filter') === 'active';
+        $activeUsers = config('fb-user.default_users_list_filter') === 'active';
+        /** @var User|null $user */
+        $user = Auth::user();
 
         $trenaryFilter = TernaryFilter::make('active_users')
             ->label(__('fb-user::fb-user.table.active_users'))
@@ -40,12 +42,15 @@ class UsersTable
             );
 
         return $table
-            ->modifyQueryUsing(fn ($query) => $query
-                ->withTrashed()
-                ->unless(
-                    Auth::user()?->hasRole('super_admin'),
-                    fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
-                ))
+            ->modifyQueryUsing(function (Builder $query) use ($user) {
+                /** @var Builder<User> $query */
+                return $query
+                    ->withTrashed()
+                    ->unless(
+                        $user?->hasRole('super_admin'),
+                        fn (Builder $query) => $query->role(roles: ['super_admin'], without: true)
+                    );
+            })
             ->columns([
                 ImageColumn::make('avatar')
                     ->label(__('fb-user::fb-user.table.avatar'))
@@ -55,7 +60,7 @@ class UsersTable
                     ->default(url('/fb-essentials-assets/avatar.png')),
                 TextColumn::make('last_name')
                     ->label(__('fb-user::fb-user.table.name'))
-                    ->formatStateUsing(fn (Model $record) => $record->reverse_name)
+                    ->formatStateUsing(fn (User $record) => $record->reverse_name)
                     ->sortable()
                     ->searchable(query: function (Builder $query, string $search): Builder {
                         return $query
@@ -82,7 +87,7 @@ class UsersTable
                     ->badge(),
                 ToggleColumn::make('active')
                     ->label(__('fb-user::fb-user.table.active'))
-                    ->disabled(fn (?Model $record) => $record?->hasRole('super_admin')),
+                    ->disabled(fn (?User $record) => $record?->hasRole('super_admin')),
                 TextColumn::make('created_by')
                     ->label(__('Created by'))
                     ->sortable()
@@ -112,7 +117,7 @@ class UsersTable
                         titleAttribute: 'name',
                         modifyQueryUsing: fn (Builder $query) => $query
                             ->when(
-                                ! Auth::user()?->hasRole('super_admin'),
+                                ! $user?->hasRole('super_admin'),
                                 fn (Builder $query) => $query->where('name', '<>', 'super_admin')
                             )
                     )
@@ -121,9 +126,9 @@ class UsersTable
                 TrashedFilter::make(),
             ])
             ->recordActions([
-                EditAction::make()->visible(fn (?Model $record) => ! $record->trashed()),
-                RestoreAction::make()->recordTitle(fn (?Model $record): ?string => $record->name),
-                ForceDeleteAction::make()->recordTitle(fn (?Model $record): ?string => $record->name),
+                EditAction::make()->visible(fn (?User $record) => $record?->trashed() !== true),
+                RestoreAction::make()->recordTitle(fn (?User $record): ?string => $record?->name),
+                ForceDeleteAction::make()->recordTitle(fn (?User $record): ?string => $record?->name),
                 DeleteAction::make(),
             ])
             ->toolbarActions([
@@ -133,12 +138,12 @@ class UsersTable
                     ->modalWidth('sm')
                     ->deselectRecordsAfterCompletion()
                     ->schema([
-                        Toggle::make('active')->label(__('fb-user::fb-user.active_deactive_modal.form_label'))
+                        Toggle::make('active')->label(__('fb-user::fb-user.active_deactive_modal.form_label')),
                     ])
                     ->action(
                         fn (Collection $records, array $data) => $records
                             ->each(
-                                function (Model $record) use ($data) {
+                                function (User $record) use ($data) {
                                     $result = array_filter($record->roles->toArray(), fn ($item) => isset($item['name']) && $item['name'] === 'super_admin');
 
                                     if (empty($result)) {
@@ -150,7 +155,7 @@ class UsersTable
                 DeleteBulkAction::make()
                     ->action(
                         fn (Collection $records) => $records
-                            ->each(function (Model $record) {
+                            ->each(function (User $record) {
                                 $result = array_filter($record->roles->toArray(), fn ($item) => isset($item['name']) && $item['name'] === 'super_admin');
 
                                 if (empty($result)) {

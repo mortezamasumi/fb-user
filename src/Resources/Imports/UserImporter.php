@@ -3,26 +3,24 @@
 namespace Mortezamasumi\FbUser\Resources\Imports;
 
 use Ariaieboy\Jalali\CalendarUtils;
-use Carbon\Carbon;
-use Filament\Actions\Imports\Models\Import;
+use Exception;
 use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
 use Filament\Forms\Components\Checkbox;
+use Illuminate\Auth\EloquentUserProvider;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\App;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Number;
-use Mortezamasumi\FbAuth\Enums\AuthType;
 use Mortezamasumi\FbEssentials\Traits\ImportCompletedNotificationBody;
 use Mortezamasumi\FbProfile\Enums\GenderEnum;
+use Mortezamasumi\FbUser\Models\User;
 use Spatie\Permission\Models\Role;
-use Exception;
 
 class UserImporter extends Importer
 {
     use ImportCompletedNotificationBody;
 
-    public static function getDate($state): ?Carbon
+    public static function getDate(mixed $state): ?Carbon
     {
         try {
             throw_unless($state);
@@ -69,11 +67,15 @@ class UserImporter extends Importer
             ImportColumn::make('gender')
                 ->label(__('fb-user::fb-user.importer.gender'))
                 ->fillRecordUsing(function (Model $record, ?string $state): void {
-                    $record->gender = GenderEnum::tryFrom($state) ?? GenderEnum::Undefined;
+                    /** @var User $record */
+                    $record->gender = GenderEnum::tryFrom((string) $state) ?? GenderEnum::Undefined;
                 }),
             ImportColumn::make('birth_date')
                 ->label(__('fb-user::fb-user.importer.birth_date'))
-                ->fillRecordUsing(fn (Model $record, ?string $state) => $record->birth_date = static::getDate($state)),
+                ->fillRecordUsing(function (Model $record, ?string $state): void {
+                    /** @var User $record */
+                    $record->birth_date = static::getDate($state);
+                }),
             ImportColumn::make('username')
                 ->label(__('fb-user::fb-user.importer.username'))
                 ->requiredMapping(config('fb-profile.username_required'))
@@ -108,28 +110,41 @@ class UserImporter extends Importer
                 ->label(__('fb-user::fb-user.importer.active')),
             ImportColumn::make('expiration_date')
                 ->label(__('fb-user::fb-user.importer.expiration_date'))
-                ->fillRecordUsing(fn (Model $record, ?string $state) => $record->expiration_date = static::getDate($state)),
+                ->fillRecordUsing(function (Model $record, ?string $state): void {
+                    /** @var User $record */
+                    $record->expiration_date = static::getDate($state);
+                }),
             ImportColumn::make('roles')
                 ->label(__('fb-user::fb-user.importer.roles'))
                 ->requiredMapping()
                 ->guess(['Roles', 'نقشها', 'نقش ها', 'نقش‌ها'])
                 ->array(',')
                 ->rules(['required', 'array', 'min:1'])
-                ->nestedRecursiveRules(fn () => Auth::user()->can('Create:Role') ? [] : ['exists:roles,name'])
+                ->nestedRecursiveRules(fn () => Auth::user()?->can('Create:Role') ? [] : ['exists:roles,name'])
                 ->fillRecordUsing(fn () => null),
         ];
     }
 
     public function resolveRecord(): ?Model
     {
-        /** @disregard */
-        return Auth::getProvider()->getModel()::firstOrNew(config('fb-auth.auth_type')->resolveRecord($this->data));
+        $provider = Auth::getProvider();
+
+        if (! $provider instanceof EloquentUserProvider) {
+            return null;
+        }
+
+        /** @var class-string<User> $model */
+        $model = $provider->getModel();
+
+        return $model::firstOrNew(config('fb-auth.auth_type')->resolveRecord($this->data));
     }
 
     protected function afterFill(): void
     {
-        $this->getRecord()->password = $this->data['password'] ?? $this->getRecord()->username;
-        $this->getRecord()->active = !! $this->getRecord()->active;
+        /** @var User $record */
+        $record = $this->getRecord();
+        $record->password = $this->data['password'] ?? $record->username;
+        $record->active = (bool) $record->active;
     }
 
     protected function afterSave(): void
@@ -146,15 +161,22 @@ class UserImporter extends Importer
         }
 
         Role::whereIn('name', $roles)
-            ->each(fn ($role) => $role->users()->attach([$this->getRecord()->id]));
+            ->each(function ($role) {
+                /** @var User $record */
+                $record = $this->getRecord();
+                $role->users()->attach([$record->id]);
+            });
     }
 
+    /**
+     * @return array<int, mixed>
+     */
     public static function getOptionsFormComponents(): array
     {
         return [
             Checkbox::make('createMissedRoles')
                 ->label(__('fb-user::fb-user.importer.create_role_if_not_exists'))
-                ->visible(Auth::user()->can('CreateRoleOnImport:User'))
+                ->visible((bool) Auth::user()?->can('CreateRoleOnImport:User')),
         ];
     }
 }

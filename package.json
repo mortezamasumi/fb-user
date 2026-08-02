@@ -1,5 +1,5 @@
 {
-    "name": "fb-auth",
+    "name": "fb-user",
     "private": true,
     "type": "module",
     "scripts": {

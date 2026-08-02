@@ -19,6 +19,7 @@ use Spatie\LaravelPackageTools\PackageServiceProvider;
 class FbUserServiceProvider extends PackageServiceProvider
 {
     public static string $name = 'fb-user';
+
     public static string $viewNamespace = 'fb-user';
 
     public function configurePackage(Package $package): void
@@ -36,7 +37,7 @@ class FbUserServiceProvider extends PackageServiceProvider
             ->hasViews();
     }
 
-    public function packageRegistered()
+    public function packageRegistered(): void
     {
         $this->app->register(GridMacroServiceProvider::class);
     }
@@ -62,7 +63,7 @@ class FbUserServiceProvider extends PackageServiceProvider
 
         if ($this->app->runningInConsole()) {
             $this->app->afterResolving(Schedule::class, function (Schedule $schedule) {
-                $schedule->job(new RemoveUnAttendUsers())->hourly();
+                $schedule->job(new RemoveUnAttendUsers)->hourly();
             });
         }
 
@@ -85,13 +86,13 @@ class FbUserServiceProvider extends PackageServiceProvider
         ];
     }
 
-    protected function getAssetPackageName(): ?string
+    protected function getAssetPackageName(): string
     {
         return 'mortezamasumi/fb-user';
     }
 
     /**
-     * @return array<Asset>
+     * @return array<Css>
      */
     protected function getAssets(): array
     {

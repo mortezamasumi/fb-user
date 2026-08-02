@@ -4,8 +4,8 @@ namespace Mortezamasumi\FbUser\Traits;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
-use Spatie\Permission\Models\Role;
 use InvalidArgumentException;
+use Spatie\Permission\Models\Role;
 
 trait HasCascadeOperation
 {
@@ -18,6 +18,9 @@ trait HasCascadeOperation
         }
     }
 
+    /**
+     * @return array{0: string, 1: string}
+     */
     private function getRelationRole(mixed $relation_role): array
     {
         if (! Arr::isAssoc($relation_role)) {
@@ -37,15 +40,13 @@ trait HasCascadeOperation
     /**
      * Update relation to assign role
      *
-     * @param array<string, string|string[]>|array<array<string, string|string[]>> $relation_roles
-     *    Either:
-     *    - A single associative array where keys are relations and value is role (string)
-     *    - An array of such associative arrays
+     * @param  array<string, string|string[]>|array<array<string, string|string[]>>  $relation_roles
+     *                                                                                                Either:
+     *                                                                                                - A single associative array where keys are relations and value is role (string)
+     *                                                                                                - An array of such associative arrays
      *
      *    Example (single): ['relation' => 'role']
      *    Example (multiple): [['relation1' => 'role1'], ['relation2' => 'role2']]
-     *
-     * @return Model
      */
     public function cascadeUpdate(array $relation_roles): Model
     {
@@ -76,8 +77,9 @@ trait HasCascadeOperation
             }
 
             // $this->$relation is HasRole (like User)
-            if (! $this->trashed() && $this->$relation && method_exists($this->$relation, 'assignRole')) {
-                $this->$relation->assignRole($role);
+            $related = $this->{$relation};
+            if (! $this->trashed() && $related && is_object($related) && method_exists($related, 'assignRole')) {
+                $related->assignRole($role);
             }
         }
 
@@ -87,18 +89,16 @@ trait HasCascadeOperation
     /**
      * Update relation to delete relation when it has only one role or just remove role from relation
      *
-     * @param array<string, string|string[]>|array<array<string, string|string[]>> $relation_roles
-     *    Either:
-     *    - An string as relation, no role activity will do
-     *    - A single associative array where keys are relations and value is role (string)
-     *    - An array of such associative arrays
+     * @param  array<string, string|string[]>|array<array<string, string|string[]>>  $relation_roles
+     *                                                                                                Either:
+     *                                                                                                - An string as relation, no role activity will do
+     *                                                                                                - A single associative array where keys are relations and value is role (string)
+     *                                                                                                - An array of such associative arrays
      *
      *    Example (single): 'relation'
      *    Example (multiple relation): ['relation1','relation2',...]
      *    Example (single relation-role): ['relation' => 'role']
      *    Example (multiple relation-role): [['relation1' => 'role1'], ['relation2' => 'role2'],...]
-     *
-     * @return Model
      */
     public function cascadeDelete(array|string $relation_roles): Model
     {
@@ -107,11 +107,9 @@ trait HasCascadeOperation
         foreach (
             Arr::isAssoc($relation_roles) ? [$relation_roles] : $relation_roles as $relation_role
         ) {
-            [$relation, $role] = match (true) {
-                is_array($relation_role) => $this->getRelationRole($relation_role),
-                is_string($relation_role) => [$relation_role, null],
-                default => throw new InvalidArgumentException('relation must be string or assoc array')
-            };
+            [$relation, $role] = is_array($relation_role)
+                ? $this->getRelationRole($relation_role)
+                : [$relation_role, null];
 
             $this->checkRelationExists($relation);
 
@@ -150,18 +148,16 @@ trait HasCascadeOperation
     /**
      * Update relation to restore relation when and add role if not exists
      *
-     * @param array<string, string|string[]>|array<array<string, string|string[]>> $relation_roles
-     *    Either:
-     *    - An string as relation, no role activity will do
-     *    - A single associative array where keys are relations and value is role (string)
-     *    - An array of such associative arrays
+     * @param  array<string, string|string[]>|array<array<string, string|string[]>>  $relation_roles
+     *                                                                                                Either:
+     *                                                                                                - An string as relation, no role activity will do
+     *                                                                                                - A single associative array where keys are relations and value is role (string)
+     *                                                                                                - An array of such associative arrays
      *
      *    Example (single): 'relation'
      *    Example (multiple relation): ['relation1','relation2',...]
      *    Example (single relation-role): ['relation' => 'role']
      *    Example (multiple relation-role): [['relation1' => 'role1'], ['relation2' => 'role2'],...]
-     *
-     * @return Model
      */
     public function cascadeRestore(array|string $relation_roles): Model
     {
@@ -170,11 +166,9 @@ trait HasCascadeOperation
         foreach (
             Arr::isAssoc($relation_roles) ? [$relation_roles] : $relation_roles as $relation_role
         ) {
-            [$relation, $role] = match (true) {
-                is_array($relation_role) => $this->getRelationRole($relation_role),
-                is_string($relation_role) => [$relation_role, null],
-                default => throw new InvalidArgumentException('relation must be string')
-            };
+            [$relation, $role] = is_array($relation_role)
+                ? $this->getRelationRole($relation_role)
+                : [$relation_role, null];
 
             $this->checkRelationExists($relation);
 
@@ -191,7 +185,7 @@ trait HasCascadeOperation
             $relations->each(function ($related) use ($role) {
                 $related->restoreQuietly();
 
-                if (method_exists($related, 'assignRole')) {
+                if (is_object($related) && method_exists($related, 'assignRole')) {
                     $related->assignRole($role);
                 }
             });
