@@ -1,6 +1,6 @@
 # OPENCODE-SUGGESTIONS — fb-user
 
-Status: 27 tests passing (204 assertions). All 26 findings addressed and verified; remaining coverage-gap work is tracked under item 26.
+Status: 46 tests passing (229 assertions). All 26 findings addressed and verified — gates green (validate, audit, pint, PHPStan level 8, pest).
 
 ## Bugs
 
@@ -64,4 +64,4 @@ Status: 27 tests passing (204 assertions). All 26 findings addressed and verifie
 
 25. ~~Test-title typo: `it('can bulk activ/deactive users ...')` (line 202) → "can bulk activate/deactivate users".~~ **FIXED**.
 
-26. Coverage gaps (no tests yet): `RemoveUnAttendUsers` job (delete branch), `User::booted()` saving hook (email_verified_at reset), `HasCascadeOperation` trait (cascadeUpdate/cascadeDelete/cascadeRestore incl. role-only branch), `HasOperatedByAttributes` trait, `NoRoleWidget` visibility, and the `default_users_list_filter === 'active'` default-filter path. Add targeted tests to keep ≥ 90% line coverage.
+26. ~~Coverage gaps (no tests yet): `RemoveUnAttendUsers` job (delete branch), `User::booted()` saving hook (email_verified_at reset), `HasCascadeOperation` trait (cascadeUpdate/cascadeDelete/cascadeRestore incl. role-only branch), `HasOperatedByAttributes` trait, `NoRoleWidget` visibility, and the `default_users_list_filter === 'active'` default-filter path. Add targeted tests to keep ≥ 90% line coverage.~~ **FIXED**: `tests/Tests/AdditionalCoverageTest.php` (19 tests) covers all listed gaps via test fixtures `CascadeSubject`, `Post`/`Activity`; 46 tests passing.
