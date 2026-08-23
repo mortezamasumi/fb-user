@@ -169,6 +169,7 @@ abstract class User extends Authenticatable implements FilamentUser, HasAvatar, 
      * Scope a query to order by a user's full name (last name, then first name).
      *
      * @param  Builder<static>  $query
+     * @param  'asc'|'desc'  $direction
      * @return Builder<static>
      */
     public function scopeOrderByFullName(Builder $query, string $direction = 'asc'): Builder
