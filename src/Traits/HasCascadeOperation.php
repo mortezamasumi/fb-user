@@ -2,6 +2,7 @@
 
 namespace Mortezamasumi\FbUser\Traits;
 
+use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
@@ -65,6 +66,7 @@ trait HasCascadeOperation
                 $relations = $this->$relation()->withTrashed();
 
                 if ($relations->exists()) {
+                    /** @var Authenticatable $this */
                     if ($this->hasRole($role)) {
                         $relations->each(fn ($related) => $related->restoreQuietly());
                     } else {
