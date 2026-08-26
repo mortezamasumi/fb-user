@@ -108,14 +108,16 @@ class UserForm
                 ->afterStateHydrated(fn (TextInput $component) => $component->state(''))
                 ->same('password_confirmation')
                 ->maxLength(255)
-                ->validationAttribute(__('filament-panels::auth/pages/register.form.password.validation_attribute')),
+                ->validationAttribute(__('filament-panels::auth/pages/register.form.password.validation_attribute'))
+                ->extraAttributes(['autocomplete' => 'new-password']),
             TextInput::make('password_confirmation')
                 ->label(__('filament-panels::auth/pages/register.form.password_confirmation.label'))
                 ->requiredWith('password')
                 ->password()
                 ->revealable(filament()->arePasswordsRevealable())
                 ->maxLength(255)
-                ->dehydrated(false),
+                ->dehydrated(false)
+                ->extraAttributes(['autocomplete' => 'new-password']),
         ];
     }
 }
