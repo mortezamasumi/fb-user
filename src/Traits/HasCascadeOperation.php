@@ -2,13 +2,17 @@
 
 namespace Mortezamasumi\FbUser\Traits;
 
-use Illuminate\Contracts\Auth\Authenticatable;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Arr;
 use InvalidArgumentException;
 use Spatie\Permission\Models\Role;
 use Spatie\Permission\Traits\HasRoles;
 
+/**
+ * @method bool hasRole(mixed $roles, ?string $guard = null)
+ * @method bool isForceDeleting()
+ * @method bool trashed()
+ */
 trait HasCascadeOperation
 {
     private function checkRelationExists(string $relation): void
@@ -66,7 +70,6 @@ trait HasCascadeOperation
                 $relations = $this->$relation()->withTrashed();
 
                 if ($relations->exists()) {
-                    /** @var Authenticatable $this */
                     if ($this->hasRole($role)) {
                         $relations->each(fn ($related) => $related->restoreQuietly());
                     } else {
