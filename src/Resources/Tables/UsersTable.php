@@ -84,7 +84,8 @@ class UsersTable
                     ->visible(config('fb-profile.mobile_required')),
                 TextColumn::make('roles.name')
                     ->label(__('fb-user::fb-user.table.roles'))
-                    ->badge(),
+                    ->badge()
+                    ->listWithLineBreaks(),
                 ToggleColumn::make('active')
                     ->label(__('fb-user::fb-user.table.active'))
                     ->disabled(fn (?User $record) => $record?->hasRole('super_admin')),

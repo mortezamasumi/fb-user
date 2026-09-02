@@ -82,6 +82,29 @@ describe('as authorized user', function () {
             ->assertCanSeeTableRecords($users);
     });
 
+    it('renders roles on the table as stacked badges', function () {
+        $role = Role::firstOrCreate(['name' => 'user', 'guard_name' => 'web']);
+
+        User::factory()
+            ->hasAttached($role)
+            ->create();
+
+        $component = $this->livewire(ListUsers::class);
+
+        $column = $component
+            ->instance()
+            ->getTable()
+            ->getColumn('roles.name');
+
+        expect($column)
+            ->not
+            ->toBeNull()
+            ->isBadge()
+            ->toBeTrue()
+            ->isListWithLineBreaks()
+            ->toBeTrue();
+    });
+
     it('can search users by `name` or `email`', function () {
         $users = User::factory()->count(5)->create();
 
