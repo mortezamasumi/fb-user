@@ -126,7 +126,7 @@ abstract class User extends Authenticatable implements FilamentUser, HasAvatar, 
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return true;
+        return $this->active && (! $this->expiration_date || $this->expiration_date->isFuture());
     }
 
     public function getFilamentName(): string
