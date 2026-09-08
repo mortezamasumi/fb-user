@@ -8,7 +8,7 @@ use Mortezamasumi\FbUser\Support\OperatedBy;
 use Mortezamasumi\FbUser\Tests\Services\User;
 
 beforeEach(function (): void {
-    DB::connection()->getPdo()->sqliteCreateFunction('CONCAT', fn(...$args): string => implode('', $args), -1);
+    DB::connection()->getPdo()->sqliteCreateFunction('CONCAT', fn (...$args): string => implode('', $args), -1);
 
     Schema::create('operated_by_subjects', function (Blueprint $table): void {
         $table->uuid('id')->primary();
@@ -30,7 +30,7 @@ afterEach(function (): void {
 
 it('sorts and searches by the latest activity causer name', function (): void {
     $alice = User::factory()->create(['first_name' => 'Alice', 'last_name' => 'Zulu']);
-    $bob   = User::factory()->create(['first_name' => 'Bob', 'last_name' => 'Yan']);
+    $bob = User::factory()->create(['first_name' => 'Bob', 'last_name' => 'Yan']);
 
     DB::table('operated_by_subjects')->insert([
         ['id' => '00000000-0000-0000-0000-000000000001'],
