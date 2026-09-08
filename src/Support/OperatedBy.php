@@ -14,22 +14,23 @@ class OperatedBy
      * This matches HasOperatedByAttributes: the causer of the newest activity
      * with the requested description for the current subject.
      */
+
     /**
      * @param  Builder<Model>  $query
      */
     public static function subquery(Builder $query, string $description): string
     {
         $subject = $query->getModel();
-        $pdo = $subject->getConnection()->getPdo();
+        $pdo     = $subject->getConnection()->getPdo();
 
         $sql = sprintf(
             "(select concat(users.first_name, ' ', users.last_name) "
-                .'from activity_log '
-                .'inner join users on users.id = activity_log.causer_id '
-                .'where activity_log.subject_type = %s '
-                .'and activity_log.subject_id = %s '
-                .'and activity_log.description = %s '
-                .'order by activity_log.id desc limit 1)',
+                . 'from activity_log '
+                . 'inner join users on users.id = activity_log.causer_id '
+                . 'where activity_log.subject_type = %s '
+                . 'and activity_log.subject_id = %s '
+                . 'and activity_log.description = %s '
+                . 'order by activity_log.id desc limit 1)',
             $pdo->quote($subject->getMorphClass()),
             $subject->getQualifiedKeyName(),
             $pdo->quote($description),
@@ -59,7 +60,7 @@ class OperatedBy
                         ->limit(1);
                 }, '__operated_by_sort')
                 ->orderBy('__operated_by_sort', $direction === 'desc' ? 'desc' : 'asc')
-                ->addSelect($subject->getTable().'.*');
+                ->addSelect($subject->getTable() . '.*');
         };
     }
 
@@ -73,9 +74,8 @@ class OperatedBy
         };
     }
 
-    /**
-     * Find subjects whose latest matching activity causer has the searched name.
-     */
+    /** Find subjects whose latest matching activity causer has the searched name. */
+
     /**
      * @param  Builder<Model>  $query
      */
@@ -83,7 +83,7 @@ class OperatedBy
     {
         $subject = $query->getModel();
 
-        return fn (QueryBuilder $activityQuery) => $activityQuery
+        return fn(QueryBuilder $activityQuery) => $activityQuery
             ->select('activity_log.id')
             ->from('activity_log')
             ->join('users', 'users.id', '=', 'activity_log.causer_id')
